@@ -1,0 +1,3 @@
+numpy
+vunit_hdl
+scipy
