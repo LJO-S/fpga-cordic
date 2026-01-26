@@ -1,0 +1,149 @@
+{
+    "SIN_COS": [
+        {
+            "mode": "ROTATIONAL",
+            "submode": "CIRCULAR",
+            "init": {
+                "x": {
+                    "type": "PROC_GAIN",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "CONST",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "INPUT_Z",
+                    "offset": 0.0
+                }
+            },
+            "comment": "Sine & Cosine step 1/1 (Note: functions as 'POL2REC')"
+        }
+    ],
+    "ARCTAN": [
+        {
+            "mode": "VECTORING",
+            "submode": "CIRCULAR",
+            "init": {
+                "x": {
+                    "type": "INPUT_X",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "INPUT_Y",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "CONST",
+                    "offset": 0.0
+                }
+            },
+            "comment": "Arctan step 1/1 (Note: functions as 'REC2POL')"
+        }
+    ],
+    "MULT": [
+        {
+            "mode": "ROTATIONAL",
+            "submode": "LINEAR",
+            "init": {
+                "x": {
+                    "type": "INPUT_X",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "INPUT_Y",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "INPUT_Z",
+                    "offset": 0.0
+                }
+            },
+            "comment": "MULT step 1/1"
+        }
+    ],
+    "DIV": [
+        {
+            "mode": "VECTORING",
+            "submode": "LINEAR",
+            "init": {
+                "x": {
+                    "type": "INPUT_X",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "INPUT_Y",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "INPUT_Z",
+                    "offset": 0.0
+                }
+            },
+            "comment": "DIV step 1/1"
+        }
+    ],
+    "RECIPROCAL": [
+        {
+            "mode": "VECTORING",
+            "submode": "LINEAR",
+            "init": {
+                "x": {
+                    "type": "INPUT_X",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "CONST",
+                    "offset": 1.0
+                },
+                "z": {
+                    "type": "INPUT_Z",
+                    "offset": 0.0
+                }
+            },
+            "comment": "RECIP step 1/1"
+        }
+    ],
+    "SINH_COSH": [
+        {
+            "mode": "ROTATIONAL",
+            "submode": "HYPERBOLIC",
+            "init": {
+                "x": {
+                    "type": "PROC_GAIN_HYP_INV",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "CONST",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "INPUT_Z",
+                    "offset": 0.0
+                }
+            },
+            "comment": "SINH_COSH step 1/1"
+        }
+    ],
+    "ARCTANH": [
+        {
+            "mode": "VECTORING",
+            "submode": "HYPERBOLIC",
+            "init": {
+                "x": {
+                    "type": "INPUT_X",
+                    "offset": 0.0
+                },
+                "y": {
+                    "type": "INPUT_Y",
+                    "offset": 0.0
+                },
+                "z": {
+                    "type": "CONST",
+                    "offset": 0.0
+                }
+            },
+            "comment": "ARCTANH step 1/1"
+        }
+    ]
+}

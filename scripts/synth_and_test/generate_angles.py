@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy
 from pathlib import Path
 import os, sys
@@ -60,13 +62,34 @@ class generate_angle:
 
                 f.write(f"{angle_bstring}\n")
 
+    def pre_config(
+        self,
+        a_depth: int,
+        a_width: int,
+        a_frac: int,
+        a_output_path_circ: Path,
+        a_output_path_hyper: Path,
+    ):
+        self.generate_circ_angles(
+            a_depth=a_depth,
+            a_width=a_width,
+            a_frac=a_frac,
+            a_output_path=a_output_path_circ,
+        )
+        self.generate_hyper_angles(
+            a_depth=a_depth,
+            a_width=a_width,
+            a_frac=a_frac,
+            a_output_path=a_output_path_hyper,
+        )
+
 
 if __name__ == "__main__":
     # ======================================================
     # PARAMETERS
     G_DEPTH = 40
     G_WIDTH = 32
-    G_FRAC = 31
+    G_FRAC = 30
     G_FILEPATH = Path("../data/")
     # ======================================================
     gen_angle = generate_angle()
@@ -82,9 +105,9 @@ if __name__ == "__main__":
         a_frac=G_FRAC,
         a_output_path=(G_FILEPATH / f"angle_hyper_0_{G_DEPTH-1}.txt"),
     )
-    gen_angle.generate_linear_angles(
-        a_depth=G_DEPTH,
-        a_width=G_WIDTH,
-        a_frac=G_FRAC,
-        a_output_path=(G_FILEPATH / f"angle_linear_0_{G_DEPTH-1}.txt"),
-    )
+    # gen_angle.generate_linear_angles(
+    #     a_depth=G_DEPTH,
+    #     a_width=G_WIDTH,
+    #     a_frac=G_FRAC,
+    #     a_output_path=(G_FILEPATH / f"angle_linear_0_{G_DEPTH-1}.txt"),
+    # )

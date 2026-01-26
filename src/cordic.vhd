@@ -19,8 +19,8 @@ end entity cordic;
 
 architecture rtl of cordic is
     -- TODO Not sure if these should be here
-    signal r_mode    : t_mode    := LINEAR;
-    signal r_submode : t_submode := VECTORING;
+    signal r_mode    : t_mode    := VECTORING;
+    signal r_submode : t_submode := LINEAR;
 begin
     -- ===================================================================
     -- Control
@@ -38,8 +38,8 @@ begin
     begin
         if rising_edge(clk) then
             if (i_config_tvalid = '1') then
-                r_mode    <= f_mode_translate(i_config_tdata(2 downto 1));
-                r_submode <= f_submode_translate(i_config_tdata(0));
+                r_mode    <= f_mode_translate(i_config_tdata(2));
+                r_submode <= f_submode_translate(i_config_tdata(1 downto 0));
             end if;
         end if;
     end process;

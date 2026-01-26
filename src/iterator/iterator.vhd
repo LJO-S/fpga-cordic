@@ -29,9 +29,9 @@ entity iterator is
         i_data_z      : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
         i_data_tvalid : in std_logic;
         -- Output
-        o_data_x      : out std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        o_data_y      : out std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        o_data_z      : out std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        o_data_x      : out std_logic_vector(G_DATA_WIDTH + integer(ceil(log2(real(G_NBR_OF_ITERATIONS)))) - 1 downto 0);
+        o_data_y      : out std_logic_vector(G_DATA_WIDTH + integer(ceil(log2(real(G_NBR_OF_ITERATIONS)))) - 1 downto 0);
+        o_data_z      : out std_logic_vector(G_DATA_WIDTH + integer(ceil(log2(real(G_NBR_OF_ITERATIONS)))) - 1 downto 0);
         o_data_tvalid : out std_logic
     );
 end entity iterator;
@@ -46,7 +46,7 @@ architecture rtl of iterator is
     -- ---------------
     -- Types
     -- ---------------
-    type t_operation_state is (IDLE, SHIFT, ADD, INCR);
+    type t_operation_state is (IDLE, SHIFT, ADD, INCR, READ);
     -- ---------------
     -- Signals
     -- ---------------
@@ -68,10 +68,6 @@ architecture rtl of iterator is
     signal w_hyper_angle : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
 
 begin
-    -- ===================================================================
-    -- TODO should this even be here??
-    -- Configuration
-
     -- ===================================================================
     -- Angle ROM
     circular_rom_inst : entity work.angle_rom
@@ -102,30 +98,37 @@ begin
     -- ===================================================================
     -- Main
     p_iterate : process (clk)
+        variable v_iter_x_float  : real;
+        variable v_iter_y_float  : real;
+        variable v_iter_z_float  : real;
+        variable v_shift_x_float : real;
+        variable v_shift_y_float : real;
+        variable v_shift_z_float : real;
     begin
         if rising_edge(clk) then
             case s_operation is
                     -- ---------------------------------------------
-                when IDLE           =>
-                    r_iter   <= (others => '0');
-                    r_iter_x <= signed(i_data_x);
-                    r_iter_x <= signed(i_data_y);
-                    r_iter_x <= signed(i_data_z);
+                when IDLE                 =>
+                    r_iter         <= (others => '0');
+                    r_iter_x       <= resize(signed(i_data_x), r_iter_x'length);
+                    r_iter_y       <= resize(signed(i_data_y), r_iter_y'length);
+                    r_iter_z       <= resize(signed(i_data_z), r_iter_z'length);
+                    r_iter_stutter <= to_unsigned(4, r_iter_stutter'length);
                     if (i_data_tvalid = '1') then
                         s_operation <= SHIFT;
                     end if;
                     -- ---------------------------------------------
                 when SHIFT =>
                     -- X/Z
-                    if (i_mode = LINEAR) then
+                    if (i_submode = LINEAR) then
                         r_shift_x <= (others => '0');
-                        r_shift_z <= - shift_right(C_SIGNED_ONE, to_integer(r_iter));
-                    elsif (i_mode = CIRCULAR) then
+                        r_shift_z <= - resize(shift_right(C_SIGNED_ONE, to_integer(r_iter)), r_shift_z'length);
+                    elsif (i_submode = CIRCULAR) then
                         r_shift_x <= - shift_right(r_iter_y, to_integer(r_iter));
-                        r_shift_z <= - signed(w_circ_angle);
-                    elsif (i_mode = HYPERBOLIC) then
+                        r_shift_z <= - resize(signed('0' & w_circ_angle), r_shift_z'length);
+                    elsif (i_submode = HYPERBOLIC) then
                         r_shift_x <= shift_right(r_iter_y, to_integer(r_iter + 1));
-                        r_shift_z <= - signed(w_hyper_angle);
+                        r_shift_z <= - resize(signed('0' & w_hyper_angle), r_shift_z'length);
                     end if;
                     -- Y
                     r_shift_y <= shift_right(r_iter_x, to_integer(r_iter));
@@ -133,6 +136,10 @@ begin
                     s_operation <= ADD;
                     -- ---------------------------------------------
                 when ADD =>
+                    -- DEBUG
+                    v_shift_x_float := real(to_integer(r_shift_x)) / (2.0 ** G_DATA_FRAC_WIDTH);
+                    v_shift_y_float := real(to_integer(r_shift_y)) / (2.0 ** G_DATA_FRAC_WIDTH);
+                    v_shift_z_float := real(to_integer(r_shift_z)) / (2.0 ** G_DATA_FRAC_WIDTH);
                     -- Add
                     if (r_sign = '1') then
                         r_iter_x <= r_iter_x - r_shift_x;
@@ -147,15 +154,26 @@ begin
                     s_operation <= INCR;
                     -- ---------------------------------------------
                 when INCR =>
+                    -- DEBUG
+                    v_iter_x_float := real(to_integer(r_iter_x)) / (2.0 ** G_DATA_FRAC_WIDTH);
+                    v_iter_y_float := real(to_integer(r_iter_y)) / (2.0 ** G_DATA_FRAC_WIDTH);
+                    v_iter_z_float := real(to_integer(r_iter_z)) / (2.0 ** G_DATA_FRAC_WIDTH);
                     -- State check
                     if (r_iter >= G_NBR_OF_ITERATIONS - 1) then
                         r_iter      <= (others => '0');
                         s_operation <= IDLE;
                     else
                         r_iter <= r_iter + 1;
-                        -- TODO OH OH CHECK STUTTER
-                        s_operation <= SHIFT;
+                        -- Stutter Handle
+                        if (i_submode = HYPERBOLIC) and (r_iter = r_iter_stutter) then
+                            r_iter         <= r_iter;
+                            r_iter_stutter <= shift_left(r_iter_stutter, 1) + r_iter_stutter + 1; -- 3k+1
+                        end if;
+                        s_operation <= READ;
                     end if;
+                    -- ---------------------------------------------
+                when READ =>
+                    s_operation <= SHIFT;
                     -- ---------------------------------------------
                 when others =>
                     s_operation <= IDLE;
@@ -168,21 +186,30 @@ begin
     p_sign : process (clk)
     begin
         if rising_edge(clk) then
-            if (i_submode = ROTATIONAL) then
+            if (i_mode = ROTATIONAL) then
                 r_sign <= r_iter_z(r_iter_z'high);
             else
                 -- VECTORING
-                r_sign <= not(r_iter_y(r_iter_z'high)) and r_iter_x(r_iter_x'high);
+                -- r_sign <= not(r_iter_y(r_iter_z'high) and r_iter_x(r_iter_x'high));
+                r_sign <= not(r_iter_y(r_iter_z'high));
             end if;
         end if;
     end process p_sign;
     -- ===================================================================
     -- Combinatorial
+    -- TODO hmm what about range
     o_data_x      <= std_logic_vector(r_iter_x);
     o_data_y      <= std_logic_vector(r_iter_y);
     o_data_z      <= std_logic_vector(r_iter_z);
     o_data_tvalid <= '1' when (r_iter >= G_NBR_OF_ITERATIONS - 1) and (s_operation = INCR) else
         '0';
+    -- ===================================================================
+    p_ovf_and_saturate : process (clk)
+    begin
+        if rising_edge(clk) then
+            null;
+        end if;
+    end process p_ovf_and_saturate;
     -- ===================================================================
 
 end architecture;

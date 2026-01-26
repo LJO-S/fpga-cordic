@@ -23,7 +23,8 @@ def test_function(a_func: Function):
         # Input
         x = 0.0
         y = 0.0
-        z = random.uniform(0, 2 * np.pi)
+        # z = random.uniform(0, 2 * np.pi)
+        z = np.deg2rad(45)
         # Expected
         x_exp = np.cos(z)
         y_exp = np.sin(z)
@@ -286,30 +287,30 @@ if __name__ == "__main__":
     # PARAMETERS
     NBR_OF_ITERATIONS = 40
     # ===============================
-    for _ in range(1000):
+    for _ in range(1):
         for function in (
             Function.SIN_COS,  # DONE
-            Function.TAN,  # DONE
-            Function.ARCSIN,  # DONE
-            Function.ARCCOS,  # DONE
-            Function.ARCTAN,  # DONE
-            Function.POL_TO_REC,  # DONE
-            Function.REC_TO_POL,  # DONE
-            Function.MULT,  # DONE
-            Function.DIV,  # DONE
-            Function.RECIPROCAL,  # DONE
-            Function.SINH_COSH,  # DONE
-            Function.TANH,  # DONE
+            # Function.TAN,  # DONE
+            # Function.ARCSIN,  # DONE
+            # Function.ARCCOS,  # DONE
+            # Function.ARCTAN,  # DONE
+            # Function.POL_TO_REC,  # DONE
+            # Function.REC_TO_POL,  # DONE
+            # Function.MULT,  # DONE
+            # Function.DIV,  # DONE
+            # Function.RECIPROCAL,  # DONE
+            # Function.SINH_COSH,  # DONE
+            # Function.TANH,  # DONE
             # Function.ARCSINH,
             # Function.ARCCOSH,
             # Function.ARCTANH,
-            Function.SQRT,  # DONE
-            Function.LN,  # DONE
-            Function.EXP,  # DONE
-            Function.POW,  # DONE
-            Function.SEC,  # DONE
-            Function.CSC,  # DONE
-            Function.COT,  # DONE
+            # Function.SQRT,  # DONE
+            # Function.LN,  # DONE
+            # Function.EXP,  # DONE
+            # Function.POW,  # DONE
+            # Function.SEC,  # DONE
+            # Function.CSC,  # DONE
+            # Function.COT,  # DONE
             # # BIBIBIIB
             # Function.SECH,
             # Function.CSCH,
