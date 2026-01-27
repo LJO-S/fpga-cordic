@@ -153,7 +153,7 @@ class tb_iterator:
                     print()
                     print("x_ref", x_ref)
                     print("y_ref", y_ref)
-                    print("z_ref=", z_ref, "z_in_deg", np.rad2deg(z_ref))
+                    print("z_ref=", z_ref)
                     print()
                     x_comp = _compare_value(actual=x_out_f, reference=x_ref)
                     y_comp = _compare_value(actual=y_out_f, reference=y_ref)

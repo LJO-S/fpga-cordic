@@ -212,43 +212,6 @@ begin
             i_mode      <= f_json_mode(C_MODE);
             i_submode   <= f_json_submode(C_SUBMODE);
             wait until tb_auto_done = true;
-        elsif run("manual") then
-            tb_auto_set <= false;
-            -- Sin/Cos
-            i_mode    <= ROTATIONAL;
-            i_submode <= CIRCULAR;
-            -- Init
-            for i in 0 to 89 loop
-                -- Set data
-                v_data_x    := std_logic_vector(to_signed(integer(ceil(0.60725*(2.0 ** G_DATA_FRAC_WIDTH))), G_DATA_WIDTH));
-                v_data_y    := (others => '0');
-                v_rad_float := (real(i) / 360.0) * 2.0 * MATH_PI;
-                v_rad_fixed := integer(ceil(v_rad_float * 2.0 ** C_FRAC_WIDTH));
-                v_data_z    := std_logic_vector(to_signed(v_rad_fixed, G_DATA_WIDTH));
-                -- Update inputs
-                manual_data_x <= v_data_x;
-                manual_data_y <= v_data_y;
-                manual_data_z <= v_data_z;
-
-                -- Set TVALID
-                manual_data_tvalid <= '1';
-                wait_clock(1);
-                manual_data_tvalid <= '0';
-                manual_data_x      <= (others => '0');
-                manual_data_y      <= (others => '0');
-                manual_data_z      <= (others => '0');
-                -- Wait
-                wait until o_data_tvalid = '1' for 200 * clk_period;
-                -- Calculate reference
-                v_reference_x := cos(v_rad_float);
-                v_reference_y := sin(v_rad_float);
-                v_reference_z := 0.0;
-                -- Check
-                check_cordic(v_reference_x, real(to_integer(signed(o_data_x))) / (2.0 ** G_DATA_FRAC_WIDTH));
-                check_cordic(v_reference_y, real(to_integer(signed(o_data_y))) / (2.0 ** G_DATA_FRAC_WIDTH));
-                check_cordic(v_reference_z, real(to_integer(signed(o_data_z))) / (2.0 ** G_DATA_FRAC_WIDTH));
-                wait_clock(1);
-            end loop;
         end if;
         test_runner_cleanup(runner);
     end process main;

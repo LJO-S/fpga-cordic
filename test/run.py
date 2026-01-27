@@ -119,8 +119,8 @@ testbench = lib.entity("iterator_tb")
 test = testbench.test("auto")
 tb_iterator_obj = tb_iterator()
 for TYPE in (
-    "SIN_COS",  # done
-    "ARCTAN",  # done
+    "SIN_COS",
+    "ARCTAN",
     "MULT",
     "DIV",
     "RECIPROCAL",
@@ -142,7 +142,7 @@ for TYPE in (
             a_full_domain=False,
             a_json_filepath=str(G_FILEPATH_JSON),
             a_type=TYPE,
-            a_nbr_of_tests=100,
+            a_nbr_of_tests=1000,
             a_depth=G_NBR_OF_ITERATIONS,
             a_width=G_WIDTH,
             a_frac=G_FRAC,
@@ -151,25 +151,6 @@ for TYPE in (
         ),
         post_check=tb_iterator_obj.post_check_wrapper(a_type=TYPE, a_frac=G_FRAC),
     )
-
-test = testbench.test("manual")
-generate_angle_obj = generate_angle()
-test.add_config(
-    name=f"iter-{G_NBR_OF_ITERATIONS}",
-    generics=dict(
-        G_NBR_OF_ITERATIONS=G_NBR_OF_ITERATIONS,
-        G_FILEPATH_JSON="../../" + str(G_FILEPATH_JSON),
-        G_INIT_FILEPATH_CIRC="../../" + str(G_INIT_FILEPATH_CIRC),
-        G_INIT_FILEPATH_HYPER="../../" + str(G_INIT_FILEPATH_HYPER),
-    ),
-    pre_config=generate_angle_obj.pre_config(
-        a_depth=G_NBR_OF_ITERATIONS,
-        a_width=G_WIDTH,  # this needs to map to what is inside CORDIC pkg
-        a_frac=G_FRAC,
-        a_output_path_circ=G_INIT_FILEPATH_CIRC,
-        a_output_path_hyper=G_INIT_FILEPATH_HYPER,
-    ),
-)
 
 # ----------------------------
 # Another testbench...

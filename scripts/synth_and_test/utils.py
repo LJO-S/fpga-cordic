@@ -33,8 +33,8 @@ def generate_input_data(a_json_obj: any, a_type: str, a_full_domain: bool, a_ite
 
     x, y, z = 0.0, 0.0, 0.0
     if a_type.upper() == "SIN_COS":
-        x = fetch_init_value(entry["init"]["x"]["type"]) + entry["init"]["x"]["offset"]
-        y = fetch_init_value(entry["init"]["y"]["type"]) + entry["init"]["y"]["offset"]
+        x = fetch_init_value(entry["init"]["x"]["type"])
+        y = fetch_init_value(entry["init"]["y"]["type"])
         if a_full_domain is True:
             z = random.uniform(0, 2 * np.pi)
         else:
@@ -61,28 +61,33 @@ def generate_input_data(a_json_obj: any, a_type: str, a_full_domain: bool, a_ite
             y = random.uniform(0, 100)
         else:
             x = random.uniform(0, 1)
-            y = random.uniform(0, 1)
+            y = random.uniform(0, x)
     elif a_type.upper() == "RECIPROCAL":
-        x = random.uniform(0.4, 1)
         y = 0.0
         z = 0.0
+        if a_full_domain is True:
+            x = random.uniform(0.1, 100)
+        else:
+            x = random.uniform(0.5, 1)
     elif a_type.upper() == "SINH_COSH":
-        x = 0.0
+        x = fetch_init_value(entry["init"]["x"]["type"])
         y = 0.0
         if a_full_domain is True:
             z = random.uniform(0, 100)
         else:
             z = random.uniform(0, 1)
     elif a_type.upper() == "ARCTANH":
-        x = 0.0
-        y = 0.0
-        if a_full_domain is True:
-            z = random.uniform(0, 100)
-        else:
-            z = random.uniform(0, 1)
+        x = random.uniform(0, 0.1)
+        # y = random.uniform(0, x)
+        y = x / 2
+        z = 0.0
     else:
         pass
-    return x, y, z
+    return (
+        x + entry["init"]["x"]["offset"],
+        y + entry["init"]["y"]["offset"],
+        z + entry["init"]["z"]["offset"],
+    )
 
 
 def generete_reference_data(a_type: str, x: float, y: float, z: float):
@@ -104,7 +109,7 @@ def generete_reference_data(a_type: str, x: float, y: float, z: float):
     elif a_type.upper() == "DIV":
         x_exp = x
         y_exp = None
-        z_exp = z + (1 / x)
+        z_exp = z + (y / x)
     elif a_type.upper() == "RECIPROCAL":
         x_exp = x
         y_exp = None
@@ -114,9 +119,9 @@ def generete_reference_data(a_type: str, x: float, y: float, z: float):
         y_exp = np.sinh(z)
         z_exp = None
     elif a_type.upper() == "ARCTANH":
-        x_exp = np.cosh(z)
+        x_exp = AN_HYP * np.sqrt((x**2) - (y**2))
         y_exp = None
-        z_exp = np.tanh(z)
+        z_exp = z + np.arctanh(y / x)
     else:
         pass
     return x_exp, y_exp, z_exp
