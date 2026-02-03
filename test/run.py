@@ -179,7 +179,7 @@ test = testbench.test("auto")
 tb_normalizer_obj = tb_normalizer()
 
 test.add_config(
-    name=f"auto",
+    name=f"_",
     generics=dict(
         G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
         G_DATA_WIDTH_NORM=G_DATA_WIDTH_NORM,
@@ -195,6 +195,54 @@ test.add_config(
     ),
     post_check=tb_normalizer_obj.post_check_wrapper_range_reduce(
         a_frac=G_DATA_WIDTH_FRAC
+    ),
+)
+
+# --------------------
+# Bitshift Norm
+# --------------------
+G_DATA_WIDTH_DENORM = 35
+G_DATA_WIDTH_NORM = 32
+G_FILEPATH_JSON = Path(
+    f"../scripts/microcodes.json"
+)  # completely unecessary for this test but pre_cfg uses it...
+G_SHIFT_COMMON = False
+G_SHIFT_DOUBLE = False
+G_SHIFT_INPUTS = ("x", "y", "z")
+
+G_SHIFT_INPUTS_slv = 0
+if "x" in G_SHIFT_INPUTS:
+    G_SHIFT_INPUTS_slv += 1
+if "y" in G_SHIFT_INPUTS:
+    G_SHIFT_INPUTS_slv += 10
+if "z" in G_SHIFT_INPUTS:
+    G_SHIFT_INPUTS_slv += 100
+
+testbench = lib.entity("bitshift_norm_tb")
+test = testbench.test("auto")
+tb_normalizer_obj = tb_normalizer()
+
+test.add_config(
+    name=f".",
+    generics=dict(
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_DATA_WIDTH_NORM=G_DATA_WIDTH_NORM,
+        G_SHIFT_INPUTS=111,
+        G_SHIFT_DOUBLE=G_SHIFT_DOUBLE,
+        G_SHIFT_COMMON=G_SHIFT_COMMON,
+    ),
+    pre_config=tb_normalizer_obj.pre_config_wrapper(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_type="bitshift_norm",
+        a_nbr_of_tests=1000,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_normalizer_obj.post_check_wrapper_bitshift_norm(
+        a_frac=G_DATA_WIDTH_FRAC,
+        a_shift_common=G_SHIFT_COMMON,
+        a_shift_inputs=G_SHIFT_INPUTS,
+        a_shift_double=G_SHIFT_DOUBLE,
     ),
 )
 

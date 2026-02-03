@@ -15,6 +15,7 @@ class tb_normalizer:
     """
 
     def _LZC(
+        self,
         a_shift_common: bool,
         a_shift_inputs: tuple,
         a_shift_double: bool,
@@ -139,12 +140,15 @@ class tb_normalizer:
                             a_full_domain=True,
                             a_iter=i,
                         )
-                    elif "bitshift" in a_type.lower():
-                        x, y, z = generate_input_data(
-                            a_json_obj=json_obj,
-                            a_type="MULTIPLICATION",
-                            a_full_domain=True,
-                            a_iter=i,
+                    elif "bitshift_norm" in a_type.lower():
+                        x = random.uniform(
+                            0, 2.0 ** (a_data_width_denorm - a_data_width_frac - 1)
+                        )
+                        y = random.uniform(
+                            0, 2.0 ** (a_data_width_denorm - a_data_width_frac - 1)
+                        )
+                        z = random.uniform(
+                            0, 2.0 ** (a_data_width_denorm - a_data_width_frac - 1)
                         )
                     elif "quadrant_map" in a_type.lower():
                         x, y, z = generate_input_data(
@@ -249,6 +253,129 @@ class tb_normalizer:
                     print("=====================================================")
 
                     checker = checker and x_comp and y_comp and z_comp and n_comp
+
+            return checker
+
+        return post_check
+
+    def post_check_wrapper_bitshift_norm(
+        self,
+        a_frac: int,
+        a_shift_common: bool,
+        a_shift_inputs: str,
+        a_shift_double: bool,
+        a_rtol: float = 0.001,
+        a_atol: float = 1e-9,
+    ):
+        def post_check(output_path: str):
+            def _compare_value(actual, reference):
+                if reference is not None:
+                    match = math.isclose(
+                        a=actual, b=reference, rel_tol=a_rtol, abs_tol=a_atol
+                    )
+                    diff_rel = abs(actual - reference) / (reference + a_atol)
+                    if not match:
+                        print(
+                            f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+                        )
+                        return False
+                    else:
+                        print(
+                            f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+                        )
+                return True
+
+            checker = True
+
+            # 0. Loop for data output entries:
+            input_data_path: Path = Path(output_path) / "input_data.txt"
+            output_data_path: Path = Path(output_path) / "output_data.txt"
+
+            with open(output_data_path, "r") as f_out, open(
+                input_data_path, "r"
+            ) as f_in:
+                for line in f_out:
+
+                    # 1. Read input/output data
+                    input_line = f_in.readline()
+                    [x_in, y_in, z_in] = input_line.split()
+                    output_line = line
+                    [x_out, y_out, z_out, x_shift_out, y_shift_out, z_shift_out] = (
+                        output_line.split()
+                    )
+
+                    # 2. Convert to float
+
+                    x_in_f = BitArray(bin=x_in).int / (2.0**a_frac)
+                    y_in_f = BitArray(bin=y_in).int / (2.0**a_frac)
+                    z_in_f = BitArray(bin=z_in).int / (2.0**a_frac)
+                    x_out_f = BitArray(bin=x_out).int / (2.0**a_frac)
+                    y_out_f = BitArray(bin=y_out).int / (2.0**a_frac)
+                    z_out_f = BitArray(bin=z_out).int / (2.0**a_frac)
+                    x_shift_out = BitArray(bin=x_shift_out).int
+                    y_shift_out = BitArray(bin=y_shift_out).int
+                    z_shift_out = BitArray(bin=z_shift_out).int
+
+                    # 3. Generate referenced data
+                    (
+                        x_ref,
+                        y_ref,
+                        z_ref,
+                        x_shift_ref,
+                        y_shift_ref,
+                        z_shift_ref,
+                    ) = self._LZC(
+                        a_shift_common=a_shift_common,
+                        a_shift_inputs=a_shift_inputs,
+                        a_shift_double=a_shift_double,
+                        a_x=x_in_f,
+                        a_y=y_in_f,
+                        a_z=z_in_f,
+                    )
+
+                    # 4. Compare to data output entry
+                    print()
+                    print("x_in", x_in_f)
+                    print("y_in", y_in_f)
+                    print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
+                    print()
+                    print("x_out", x_out_f)
+                    print("y_out", y_out_f)
+                    print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
+                    print("x_out_shift=", x_shift_out)
+                    print("y_out_shift=", y_shift_out)
+                    print("z_out_shift=", z_shift_out)
+                    print()
+                    print("x_ref", x_ref)
+                    print("y_ref", y_ref)
+                    print("z_ref=", z_ref)
+                    print("x_ref_shift=", x_shift_ref)
+                    print("y_ref_shift=", y_shift_ref)
+                    print("z_ref_shift=", z_shift_ref)
+                    print()
+                    x_comp = _compare_value(actual=x_out_f, reference=x_ref)
+                    y_comp = _compare_value(actual=y_out_f, reference=y_ref)
+                    z_comp = _compare_value(actual=z_out_f, reference=z_ref)
+                    x_shift_comp = _compare_value(
+                        actual=x_shift_out, reference=x_shift_ref
+                    )
+                    y_shift_comp = _compare_value(
+                        actual=y_shift_out, reference=y_shift_ref
+                    )
+                    z_shift_comp = _compare_value(
+                        actual=z_shift_out, reference=z_shift_ref
+                    )
+                    print("=====================================================")
+
+                    checker = (
+                        checker
+                        and x_comp
+                        and y_comp
+                        and z_comp
+                        and x_shift_comp
+                        and y_shift_comp
+                        and z_shift_comp
+                    )
 
             return checker
 

@@ -13,17 +13,17 @@ entity cordic_initialization is
     port (
         clk : in std_logic;
         -- X
-        i_x_in     : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_x_prev   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_x_type   : in t_initialization_type;
+        i_x_in   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_x_prev : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_x_type : in t_initialization_type;
         -- Y
-        i_y_in     : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_y_prev   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_y_type   : in t_initialization_type;
+        i_y_in   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_y_prev : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_y_type : in t_initialization_type;
         -- Z
-        i_z_in     : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_z_prev   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        i_z_type   : in t_initialization_type;
+        i_z_in   : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_z_prev : in std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        i_z_type : in t_initialization_type;
         -- Input Handshake
         i_valid : in std_logic;
         o_ready : out std_logic;
@@ -76,8 +76,8 @@ architecture rtl of cordic_initialization is
                 return signed(i_y_prev);
             when OUTPUT_Z =>
                 return signed(i_z_prev);
-            when others    =>
-                return (others => '0');
+            when others =>
+                return (G_DATA_WIDTH - 1 downto 0 => '0');
         end case;
     end function;
     ----------------

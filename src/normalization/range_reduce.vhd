@@ -84,9 +84,6 @@ begin
     p_range_reduce : process (clk)
         variable v_range_n_shift  : signed(r_range_n_mult'range) := (others => '0');
         variable v_subtract_shift : signed(r_subtract'range)     := (others => '0');
-        -- DEBUG
-        variable v_r_float        : real := 0.0;
-        variable v_subtract_float : real := 0.0;
     begin
         if rising_edge(clk) then
             -------------
@@ -118,7 +115,6 @@ begin
             r_valid_d1   <= r_valid_d0;
             r_range_n_d0 <= r_range_n;
             r_subtract   <= r_range_n * C_LN2_SIGNED;
-            -- v_subtract_float := real(real(to_integer(r_range_n)) * real(to_integer(C_LN2_SIGNED))) / (2.0 ** G_DATA_WIDTH_FRAC);
             -------------
             -- PIPE 3
             -------------
@@ -128,7 +124,6 @@ begin
             r_range_n_d1 <= r_range_n_d0;
             v_subtract_shift := shift_right(r_subtract, G_DATA_WIDTH_FRAC);
             r_range_r <= resize(signed(r_z_d1), r_subtract'length) - r_subtract;
-            -- v_r_float := real(to_integer(r_range_r(r_x_d2'range))) / (2.0 ** G_DATA_WIDTH_FRAC);
         end if;
     end process p_range_reduce;
     -- ===================================================================
