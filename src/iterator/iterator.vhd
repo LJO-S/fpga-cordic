@@ -138,9 +138,11 @@ begin
                -- ---------------------------------------------
             when ADD =>
                -- DEBUG
+               -- synthesis translate_off
                v_shift_x_float := real(to_integer(r_shift_x)) / (2.0 ** G_DATA_FRAC_WIDTH);
                v_shift_y_float := real(to_integer(r_shift_y)) / (2.0 ** G_DATA_FRAC_WIDTH);
                v_shift_z_float := real(to_integer(r_shift_z)) / (2.0 ** G_DATA_FRAC_WIDTH);
+               -- synthesis translate_on
                -- Add
                if (r_sign = '1') then
                   r_iter_x <= r_iter_x - r_shift_x;
@@ -156,9 +158,11 @@ begin
                -- ---------------------------------------------
             when INCR =>
                -- DEBUG
+               -- synthesis translate_off
                v_iter_x_float := real(to_integer(r_iter_x)) / (2.0 ** G_DATA_FRAC_WIDTH);
                v_iter_y_float := real(to_integer(r_iter_y)) / (2.0 ** G_DATA_FRAC_WIDTH);
                v_iter_z_float := real(to_integer(r_iter_z)) / (2.0 ** G_DATA_FRAC_WIDTH);
+               -- synthesis translate_on
                -- State check
                if (r_iter >= G_NBR_OF_ITERATIONS - 1) then
                   r_iter      <= (others => '0');

@@ -11,6 +11,7 @@ sys.path.append("../")
 
 from scripts.synth_and_test.generate_angles import generate_angle
 from scripts.synth_and_test.tb_iterator import tb_iterator
+from scripts.synth_and_test.tb_normalizations import tb_normalizer
 
 
 # ============================================================
@@ -63,6 +64,16 @@ lib = VU.add_library("lib")
 # ============================================================
 # Add sources
 for src_file in src_dir.rglob("*.vhd"):
+    if "cordic.vhd" in str(src_file):
+        continue
+    if "microcode_rom.vhd" in str(src_file):
+        continue
+    if "microcode_rom_wrapper.vhd" in str(src_file):
+        continue
+    if "cordic_preprocess.vhd" in str(src_file):
+        continue
+    if "cordic_core.vhd" in str(src_file):
+        continue
     lib.add_source_file(src_file)
 
 # ============================================================
@@ -106,7 +117,7 @@ for tb in lib.get_test_benches():
 # Add test configs
 
 # --------------------
-# Reciprocal
+# Iterator
 # --------------------
 G_WIDTH = 32
 G_FRAC = 30
@@ -152,9 +163,41 @@ for TYPE in (
         post_check=tb_iterator_obj.post_check_wrapper(a_type=TYPE, a_frac=G_FRAC),
     )
 
-# ----------------------------
-# Another testbench...
-# ----------------------------
+# --------------------
+# Range Reduce
+# --------------------
+G_DATA_WIDTH_DENORM = 35
+G_DATA_WIDTH_NORM = 32
+G_DATA_WIDTH_FRAC = 30
+G_RANGE_N_WIDTH = 10
+G_FILEPATH_JSON = Path(
+    f"../scripts/microcodes.json"
+)  # completely unecessary for this test but pre_cfg uses it...
+
+testbench = lib.entity("range_reduce_tb")
+test = testbench.test("auto")
+tb_normalizer_obj = tb_normalizer()
+
+test.add_config(
+    name=f"auto",
+    generics=dict(
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_DATA_WIDTH_NORM=G_DATA_WIDTH_NORM,
+        G_DATA_WIDTH_FRAC=G_DATA_WIDTH_FRAC,
+        G_RANGE_N_WIDTH=G_RANGE_N_WIDTH,
+    ),
+    pre_config=tb_normalizer_obj.pre_config_wrapper(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_type="range_reduce",
+        a_nbr_of_tests=1000,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_normalizer_obj.post_check_wrapper_range_reduce(
+        a_frac=G_DATA_WIDTH_FRAC
+    ),
+)
+
 # And another testbench etc.
 # ============================================================
 
