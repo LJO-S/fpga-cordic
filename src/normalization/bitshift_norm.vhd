@@ -21,12 +21,9 @@ entity bitshift_norm is
         i_z     : in std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
         i_valid : in std_logic;
         -- Output
-        o_x : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-        o_y : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-        o_z : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-        -- o_x_shift : out std_logic_vector(integer(ceil(log2(real(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM)))) downto 0);
-        -- o_y_shift : out std_logic_vector(integer(ceil(log2(real(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM)))) downto 0);
-        -- o_z_shift : out std_logic_vector(integer(ceil(log2(real(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM)))) downto 0);
+        o_x       : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
+        o_y       : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
+        o_z       : out std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
         o_x_shift : out std_logic_vector(G_SHIFT_WIDTH - 1 downto 0);
         o_y_shift : out std_logic_vector(G_SHIFT_WIDTH - 1 downto 0);
         o_z_shift : out std_logic_vector(G_SHIFT_WIDTH - 1 downto 0);
@@ -56,7 +53,6 @@ architecture rtl of bitshift_norm is
     -----------------
     -- Constants
     -----------------
-    constant C_SLV_ZEROS : std_logic_vector(G_DATA_WIDTH_FRAC - 1 downto 0) := (others => '0');
     -----------------
     -- Types
     -----------------
@@ -73,27 +69,27 @@ architecture rtl of bitshift_norm is
     signal r_valid_d0        : std_logic                                                    := '0';
     signal r_valid_d1        : std_logic                                                    := '0';
     signal r_valid_d2        : std_logic                                                    := '0';
-    signal r_shift_x    : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_y    : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_z    : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_x_d0 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_y_d0 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_z_d0 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_x_d1 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_y_d1 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_shift_z_d1 : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-    signal r_x          : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_y          : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_z          : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_x_d0       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_y_d0       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_z_d0       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_x_d1       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_y_d1       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_z_d1       : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_xval_shift : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_yval_shift : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
-    signal r_zval_shift : signed(G_DATA_WIDTH_DENORM - 1 downto 0) := (others => '0');
+    signal r_shift_x         : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_y         : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_z         : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_x_d0      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_y_d0      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_z_d0      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_x_d1      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_y_d1      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_shift_z_d1      : signed(G_SHIFT_WIDTH - 1 downto 0)                           := (others => '0');
+    signal r_x               : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_y               : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_z               : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_x_d0            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_y_d0            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_z_d0            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_x_d1            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_y_d1            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_z_d1            : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_xval_shift      : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_yval_shift      : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
+    signal r_zval_shift      : signed(G_DATA_WIDTH_DENORM - 1 downto 0)                     := (others => '0');
 begin
     -- ===================================================================
     o_x       <= std_logic_vector(r_xval_shift(o_x'range));
@@ -105,9 +101,9 @@ begin
     o_valid   <= r_valid_d2;
     -- ===================================================================
     process (clk)
-        variable v_shift_x : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-        variable v_shift_y : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
-        variable v_shift_z : signed(G_SHIFT_WIDTH - 1 downto 0)       := (others => '0');
+        variable v_shift_x : signed(G_SHIFT_WIDTH - 1 downto 0) := (others => '0');
+        variable v_shift_y : signed(G_SHIFT_WIDTH - 1 downto 0) := (others => '0');
+        variable v_shift_z : signed(G_SHIFT_WIDTH - 1 downto 0) := (others => '0');
         variable v_iflog_x : integer;
         variable v_iflog_y : integer;
         variable v_iflog_z : integer;

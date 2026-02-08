@@ -179,7 +179,7 @@ test = testbench.test("auto")
 tb_normalizer_obj = tb_normalizer()
 
 test.add_config(
-    name=f"_",
+    name=f".",
     generics=dict(
         G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
         G_DATA_WIDTH_NORM=G_DATA_WIDTH_NORM,
@@ -203,9 +203,6 @@ test.add_config(
 # --------------------
 G_DATA_WIDTH_DENORM = 35
 G_DATA_WIDTH_NORM = 32
-G_FILEPATH_JSON = Path(
-    f"../scripts/microcodes.json"
-)  # completely unecessary for this test but pre_cfg uses it...
 G_SHIFT_COMMON = False
 G_SHIFT_DOUBLE = False
 G_SHIFT_INPUTS = ("x", "y", "z")
@@ -243,6 +240,36 @@ test.add_config(
         a_shift_common=G_SHIFT_COMMON,
         a_shift_inputs=G_SHIFT_INPUTS,
         a_shift_double=G_SHIFT_DOUBLE,
+    ),
+)
+
+# --------------------
+# Quadrant map
+# --------------------
+G_DATA_WIDTH_DENORM = 32
+G_DATA_WIDTH_NORM = 29
+G_DATA_WIDTH_FRAC = 27
+
+testbench = lib.entity("quadrant_map_tb")
+test = testbench.test("auto")
+tb_normalizer_obj = tb_normalizer()
+
+test.add_config(
+    name=f".",
+    generics=dict(
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_DATA_WIDTH_NORM=G_DATA_WIDTH_NORM,
+        G_DATA_WIDTH_FRAC=G_DATA_WIDTH_FRAC,
+    ),
+    pre_config=tb_normalizer_obj.pre_config_wrapper(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_type="quadrant_map",
+        a_nbr_of_tests=1000,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_normalizer_obj.post_check_wrapper_quadrant_map(
+        a_frac=G_DATA_WIDTH_FRAC,
     ),
 )
 

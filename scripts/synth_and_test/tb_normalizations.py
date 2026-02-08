@@ -6,7 +6,24 @@ from vunit import json4vhdl
 
 # Custom pkgs
 from .generate_angles import generate_angle
+from .generate_pi import generate_pi_values
 from .utils import *
+
+
+def compare_value(actual, reference):
+    if reference is not None:
+        match = math.isclose(a=actual, b=reference, rel_tol=0.001, abs_tol=1e-9)
+        diff_rel = abs(actual - reference) / (reference + 1e-9)
+        if not match:
+            print(
+                f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+            )
+            return False
+        else:
+            print(
+                f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+            )
+    return True
 
 
 class tb_normalizer:
@@ -72,7 +89,7 @@ class tb_normalizer:
         r = a_z - (n * ln2)
         return a_x, a_y, r, n
 
-    def _quadrant_map(a_x: float, a_y: float, a_z: float):
+    def _quadrant_map(self, a_x: float, a_y: float, a_z: float):
         """
         Map angle z into the principal quadrant [0, pi/2).
         Returns (x', y', z_corr, quadrant) where quadrant in {1,2,3,4}.
@@ -151,6 +168,14 @@ class tb_normalizer:
                             0, 2.0 ** (a_data_width_denorm - a_data_width_frac - 1)
                         )
                     elif "quadrant_map" in a_type.lower():
+                        # Generate PI values
+                        generate_pi_values(
+                            a_width=a_data_width_denorm,
+                            a_frac=a_data_width_frac,
+                            a_output_path=Path(output_path)
+                            / f"pi_{a_data_width_denorm}b{a_data_width_frac}f.txt",
+                        )
+                        # Generate input data
                         x, y, z = generate_input_data(
                             a_json_obj=json_obj,
                             a_type="SIN_COS",
@@ -177,27 +202,8 @@ class tb_normalizer:
 
         return pre_config
 
-    def post_check_wrapper_range_reduce(
-        self, a_frac: int, a_rtol: float = 0.001, a_atol: float = 1e-9
-    ):
+    def post_check_wrapper_range_reduce(self, a_frac: int):
         def post_check(output_path: str):
-            def _compare_value(actual, reference):
-                if reference is not None:
-                    match = math.isclose(
-                        a=actual, b=reference, rel_tol=a_rtol, abs_tol=a_atol
-                    )
-                    diff_rel = abs(actual - reference) / (reference + a_atol)
-                    if not match:
-                        print(
-                            f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
-                        )
-                        return False
-                    else:
-                        print(
-                            f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
-                        )
-                return True
-
             checker = True
 
             # 0. Loop for data output entries:
@@ -246,10 +252,10 @@ class tb_normalizer:
                     print("z_ref=", z_ref)
                     print("n_ref=", n_ref)
                     print()
-                    x_comp = _compare_value(actual=x_out_f, reference=x_ref)
-                    y_comp = _compare_value(actual=y_out_f, reference=y_ref)
-                    z_comp = _compare_value(actual=z_out_f, reference=z_ref)
-                    n_comp = _compare_value(actual=n_out, reference=n_ref)
+                    x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                    y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                    z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                    n_comp = compare_value(actual=n_out, reference=n_ref)
                     print("=====================================================")
 
                     checker = checker and x_comp and y_comp and z_comp and n_comp
@@ -264,26 +270,8 @@ class tb_normalizer:
         a_shift_common: bool,
         a_shift_inputs: str,
         a_shift_double: bool,
-        a_rtol: float = 0.001,
-        a_atol: float = 1e-9,
     ):
         def post_check(output_path: str):
-            def _compare_value(actual, reference):
-                if reference is not None:
-                    match = math.isclose(
-                        a=actual, b=reference, rel_tol=a_rtol, abs_tol=a_atol
-                    )
-                    diff_rel = abs(actual - reference) / (reference + a_atol)
-                    if not match:
-                        print(
-                            f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
-                        )
-                        return False
-                    else:
-                        print(
-                            f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
-                        )
-                return True
 
             checker = True
 
@@ -353,16 +341,16 @@ class tb_normalizer:
                     print("y_ref_shift=", y_shift_ref)
                     print("z_ref_shift=", z_shift_ref)
                     print()
-                    x_comp = _compare_value(actual=x_out_f, reference=x_ref)
-                    y_comp = _compare_value(actual=y_out_f, reference=y_ref)
-                    z_comp = _compare_value(actual=z_out_f, reference=z_ref)
-                    x_shift_comp = _compare_value(
+                    x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                    y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                    z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                    x_shift_comp = compare_value(
                         actual=x_shift_out, reference=x_shift_ref
                     )
-                    y_shift_comp = _compare_value(
+                    y_shift_comp = compare_value(
                         actual=y_shift_out, reference=y_shift_ref
                     )
-                    z_shift_comp = _compare_value(
+                    z_shift_comp = compare_value(
                         actual=z_shift_out, reference=z_shift_ref
                     )
                     print("=====================================================")
@@ -376,6 +364,72 @@ class tb_normalizer:
                         and y_shift_comp
                         and z_shift_comp
                     )
+
+            return checker
+
+        return post_check
+
+    def post_check_wrapper_quadrant_map(
+        self,
+        a_frac: int,
+    ):
+        def post_check(output_path: str):
+
+            checker = True
+
+            # 0. Loop for data output entries:
+            input_data_path: Path = Path(output_path) / "input_data.txt"
+            output_data_path: Path = Path(output_path) / "output_data.txt"
+
+            with open(output_data_path, "r") as f_out, open(
+                input_data_path, "r"
+            ) as f_in:
+                for line in f_out:
+
+                    # 1. Read input/output data
+                    input_line = f_in.readline()
+                    [x_in, y_in, z_in] = input_line.split()
+                    output_line = line
+                    [x_out, y_out, z_out, q_out] = output_line.split()
+                    print("DOODODO", q_out)
+
+                    # 2. Convert to float
+                    x_in_f = BitArray(bin=x_in).int / (2.0**a_frac)
+                    y_in_f = BitArray(bin=y_in).int / (2.0**a_frac)
+                    z_in_f = BitArray(bin=z_in).int / (2.0**a_frac)
+                    x_out_f = BitArray(bin=x_out).int / (2.0**a_frac)
+                    y_out_f = BitArray(bin=y_out).int / (2.0**a_frac)
+                    z_out_f = BitArray(bin=z_out).int / (2.0**a_frac)
+                    q_out = BitArray(bin=q_out).uint + 1
+
+                    # 3. Generate referenced data
+                    (x_ref, y_ref, z_ref, q_ref) = self._quadrant_map(
+                        a_x=x_in_f, a_y=y_in_f, a_z=z_in_f
+                    )
+
+                    # 4. Compare to data output entry
+                    print()
+                    print("x_in", x_in_f)
+                    print("y_in", y_in_f)
+                    print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
+                    print()
+                    print("x_out", x_out_f)
+                    print("y_out", y_out_f)
+                    print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
+                    print("q_out=", q_out)
+                    print()
+                    print("x_ref", x_ref)
+                    print("y_ref", y_ref)
+                    print("z_ref=", z_ref)
+                    print("q_ref=", q_ref)
+                    print()
+                    x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                    y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                    z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                    q_comp = compare_value(actual=q_out, reference=q_ref)
+                    print("=====================================================")
+
+                    checker = checker and x_comp and y_comp and z_comp and q_comp
 
             return checker
 
