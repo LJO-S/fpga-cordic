@@ -198,22 +198,26 @@ test.add_config(
     ),
 )
 
+
 # --------------------
 # Bitshift Norm
 # --------------------
+def shift_input_str_to_slv(a_tuple: tuple) -> int:
+    G_SHIFT_INPUTS_slv = 0
+    if "x" in a_tuple:
+        G_SHIFT_INPUTS_slv += 1
+    if "y" in a_tuple:
+        G_SHIFT_INPUTS_slv += 10
+    if "z" in a_tuple:
+        G_SHIFT_INPUTS_slv += 100
+    return G_SHIFT_INPUTS_slv
+
+
 G_DATA_WIDTH_DENORM = 35
 G_DATA_WIDTH_NORM = 32
 G_SHIFT_COMMON = False
 G_SHIFT_DOUBLE = False
 G_SHIFT_INPUTS = ("x", "y", "z")
-
-G_SHIFT_INPUTS_slv = 0
-if "x" in G_SHIFT_INPUTS:
-    G_SHIFT_INPUTS_slv += 1
-if "y" in G_SHIFT_INPUTS:
-    G_SHIFT_INPUTS_slv += 10
-if "z" in G_SHIFT_INPUTS:
-    G_SHIFT_INPUTS_slv += 100
 
 testbench = lib.entity("bitshift_norm_tb")
 test = testbench.test("auto")
@@ -272,6 +276,84 @@ test.add_config(
         a_frac=G_DATA_WIDTH_FRAC,
     ),
 )
+
+
+# --------------------
+# Preprocess Wrapper
+# --------------------
+config = [
+    {
+        "TYPE": "wrapper-bitshift_norm",
+        "G_DATA_WIDTH_DENORM": 32,
+        "G_DATA_WIDTH_NORM": 29,
+        "G_DATA_WIDTH_FRAC": 27,
+        "G_RANGE_N_WIDTH": 10,
+        "G_SHIFT_WIDTH": 5,
+        "G_SHIFT_COMMON": False,
+        "G_SHIFT_DOUBLE": False,
+        "G_SHIFT_INPUTS": ("x", "y", "z"),
+    },
+    {
+        "TYPE": "wrapper-quadrant_map",
+        "G_DATA_WIDTH_DENORM": 32,
+        "G_DATA_WIDTH_NORM": 29,
+        "G_DATA_WIDTH_FRAC": 27,
+        "G_RANGE_N_WIDTH": 10,
+        "G_SHIFT_WIDTH": 5,
+        "G_SHIFT_COMMON": False,
+        "G_SHIFT_DOUBLE": False,
+        "G_SHIFT_INPUTS": ("x", "y", "z"),
+    },
+    {
+        "TYPE": "wrapper-range_reduce",
+        "G_DATA_WIDTH_DENORM": 32,
+        "G_DATA_WIDTH_NORM": 29,
+        "G_DATA_WIDTH_FRAC": 27,
+        "G_RANGE_N_WIDTH": 10,
+        "G_SHIFT_WIDTH": 5,
+        "G_SHIFT_COMMON": False,
+        "G_SHIFT_DOUBLE": False,
+        "G_SHIFT_INPUTS": ("x", "y", "z"),
+    },
+    {
+        "TYPE": "wrapper-bitshift_and_range",
+        "G_DATA_WIDTH_DENORM": 32,
+        "G_DATA_WIDTH_NORM": 29,
+        "G_DATA_WIDTH_FRAC": 27,
+        "G_RANGE_N_WIDTH": 10,
+        "G_SHIFT_WIDTH": 5,
+        "G_SHIFT_COMMON": False,
+        "G_SHIFT_DOUBLE": False,
+        "G_SHIFT_INPUTS": ("x", "y", "z"),
+    },
+]
+
+
+testbench = lib.entity("cordic_preprocess_tb")
+test = testbench.test("auto")
+tb_normalizer_obj = tb_normalizer()
+for cfg in config:
+    test.add_config(
+        name=f'TYPE={cfg["TYPE"]}_DW={cfg["G_DATA_WIDTH_DENORM"]}_W={cfg["G_DATA_WIDTH_NORM"]}_F={cfg["G_DATA_WIDTH_FRAC"]}_S={cfg["G_SHIFT_WIDTH"]}_R={cfg["G_RANGE_N_WIDTH"]}_C={cfg["G_SHIFT_COMMON"]}_D={cfg["G_SHIFT_DOUBLE"]}_I={shift_input_str_to_slv(cfg["G_SHIFT_INPUTS"])}',
+        generics=dict(
+            G_DATA_WIDTH_DENORM=cfg["G_DATA_WIDTH_DENORM"],
+            G_DATA_WIDTH_NORM=cfg["G_DATA_WIDTH_NORM"],
+            G_DATA_WIDTH_FRAC=cfg["G_DATA_WIDTH_FRAC"],
+            G_SHIFT_WIDTH=cfg["G_SHIFT_WIDTH"],
+            G_RANGE_N_WIDTH=cfg["G_RANGE_N_WIDTH"],
+            G_SHIFT_COMMON=cfg["G_SHIFT_COMMON"],
+            G_SHIFT_DOUBLE=cfg["G_SHIFT_DOUBLE"],
+            G_SHIFT_INPUTS=shift_input_str_to_slv(cfg["G_SHIFT_INPUTS"]),
+        ),
+        pre_config=tb_normalizer_obj.pre_config_wrapper(
+            a_json_filepath=str(G_FILEPATH_JSON),
+            a_type=cfg["TYPE"],
+            a_nbr_of_tests=1,
+            a_data_width_denorm=cfg["G_DATA_WIDTH_DENORM"],
+            a_data_width_frac=cfg["G_DATA_WIDTH_FRAC"],
+        ),
+        post_check=tb_normalizer_obj.post_check_wrapper_preprocess(a_cfg=cfg),
+    )
 
 # And another testbench etc.
 # ============================================================
