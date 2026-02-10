@@ -5,6 +5,11 @@ use ieee.math_real.all;
 -- 
 use work.cordic_pkg.all;
 -- 
+-- 
+-- TODO 
+-- 1. Fix all these generics mapping from run.py
+-- 2. Fix actual PI filepath
+-- 3. Fix how we write down values from the output file
 entity cordic_preprocess is
     generic (
         G_DATA_WIDTH_DENORM : natural := 35;
@@ -12,7 +17,7 @@ entity cordic_preprocess is
         G_DATA_WIDTH_FRAC   : natural := 30;
         G_SHIFT_WIDTH       : natural := 5;
         G_RANGE_N_WIDTH     : natural := 10;
-        G_PI_FILEPATH       : string  := "../../data/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
+        G_PI_FILEPATH       : string := "../../data/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
     );
     port (
         clk : in std_logic;
@@ -91,8 +96,8 @@ architecture rtl of cordic_preprocess is
     signal w_quadrant_x_out     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
     signal w_quadrant_y_out     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
     signal w_quadrant_z_out     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal w_quadrant_out       : std_logic_vector(G_RANGE_N_WIDTH - 1 downto 0);
-    signal r_quadrant_out       : std_logic_vector(G_RANGE_N_WIDTH - 1 downto 0) := (others => '0');
+    signal w_quadrant_out       : std_logic_vector(1 downto 0);
+    signal r_quadrant_out       : std_logic_vector(1 downto 0) := (others => '0');
 
 begin
     -- ===================================================================

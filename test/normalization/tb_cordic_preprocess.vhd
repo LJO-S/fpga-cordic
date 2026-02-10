@@ -1,7 +1,7 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 -- 
 use std.textio.all;
 -- 
@@ -13,7 +13,17 @@ context vunit_lib.vunit_context;
 
 entity cordic_preprocess_tb is
     generic (
-        runner_cfg : string
+        runner_cfg          : string;
+        G_DATA_WIDTH_DENORM : natural;
+        G_DATA_WIDTH_NORM   : natural;
+        G_DATA_WIDTH_FRAC   : natural;
+        G_SHIFT_WIDTH       : natural;
+        G_RANGE_N_WIDTH     : natural;
+        G_SHIFT_COMMON      : boolean;
+        G_SHIFT_DOUBLE      : boolean;
+        G_SHIFT_INPUTS      : integer;
+        G_NORM_TYPE         : integer;
+        G_PI_FILEPATH       : string := output_path(runner_cfg) & "/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
     );
 end;
 
@@ -21,12 +31,6 @@ architecture bench of cordic_preprocess_tb is
     -- Clock period
     constant clk_period : time := 5 ns;
     -- Generics
-    constant G_DATA_WIDTH_DENORM : natural := 35;
-    constant G_DATA_WIDTH_NORM   : natural := 32;
-    constant G_DATA_WIDTH_FRAC   : natural := 30;
-    constant G_SHIFT_WIDTH       : natural := 5;
-    constant G_RANGE_N_WIDTH     : natural := 10;
-    constant G_PI_FILEPATH       : string  := "../../data/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt";
     -- Ports
     signal clk          : std_logic := '0';
     signal i_config     : t_normalization;
@@ -66,6 +70,29 @@ architecture bench of cordic_preprocess_tb is
             wait until rising_edge(clk);
         end loop;
     end procedure;
+
+    function f_shift_input_int_to_slv (
+        value : integer
+    ) return std_logic_vector is
+        variable v_val : integer;
+        variable v_slv : std_logic_vector(2 downto 0);
+    begin
+        v_slv := "000";
+        v_val := value / 100;
+        if (v_val >= 1) then
+            v_slv(2) := '1';
+        end if;
+        v_val := (value / 10) mod 10;
+        if (v_val >= 1) then
+            v_slv(1) := '1';
+        end if;
+        v_val := value mod 10;
+        if (v_val >= 1) then
+            v_slv(0) := '1';
+        end if;
+
+        return v_slv;
+    end function;
 begin
     -- ===================================================================
     clk <= not clk after clk_period/2;
@@ -149,6 +176,26 @@ begin
             o_valid      => o_valid
         );
     -- ===================================================================
+    p_config : process (all)
+    begin
+        -- Bitshift
+        i_config.norm_en           <= '0';
+        i_config.norm_common       <= '0';
+        i_config.norm_shift_double <= '0';
+        i_config.norm_input        <= f_shift_input_int_to_slv(G_SHIFT_INPUTS);
+        if (G_SHIFT_COMMON = true) then
+            i_config.norm_common <= '1';
+        end if;
+        if (G_SHIFT_DOUBLE = true) then
+            i_config.norm_shift_double <= '1';
+        end if;
+        -- Range Reduce
+        i_config.reduction_en          <= '0';
+        i_config.reduction_reconstruct <= '0';
+        -- Quadrant
+        i_config.quadrant_en <= '0';
+    end process p_config;
+
     main : process
     begin
         test_runner_setup(runner, runner_cfg);
@@ -157,6 +204,7 @@ begin
             wait until clk = '1';
             tb_auto_set <= true;
             wait until tb_auto_done = true;
+            wait_clock(100);
         end if;
         test_runner_cleanup(runner);
     end process main;

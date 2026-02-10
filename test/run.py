@@ -70,8 +70,6 @@ for src_file in src_dir.rglob("*.vhd"):
         continue
     if "microcode_rom_wrapper.vhd" in str(src_file):
         continue
-    if "cordic_preprocess.vhd" in str(src_file):
-        continue
     if "cordic_core.vhd" in str(src_file):
         continue
     lib.add_source_file(src_file)
