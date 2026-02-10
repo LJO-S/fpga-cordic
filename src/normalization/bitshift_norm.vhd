@@ -48,7 +48,7 @@ architecture rtl of bitshift_norm is
                 v_count := v_count + 1;
             end if;
         end loop;
-        return 0;
+        return G_DATA_WIDTH_FRAC;
     end function;
     -----------------
     -- Constants

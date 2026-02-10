@@ -17,7 +17,7 @@ entity cordic_preprocess is
         G_DATA_WIDTH_FRAC   : natural := 30;
         G_SHIFT_WIDTH       : natural := 5;
         G_RANGE_N_WIDTH     : natural := 10;
-        G_PI_FILEPATH       : string := "../../data/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
+        G_PI_FILEPATH       : string  := "../../data/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
     );
     port (
         clk : in std_logic;
@@ -146,7 +146,8 @@ begin
                         r_reduce_valid_in <= '1';
                         s_preproc_state   <= RANGE_REDUCE;
                     elsif (r_config.quadrant_en = '1') then
-                        s_preproc_state <= QUADRANT_MAP;
+                        r_quadrant_valid_in <= '1';
+                        s_preproc_state     <= QUADRANT_MAP;
                     else
                         r_valid_out <= '1';
                         if (i_ready = '1') then

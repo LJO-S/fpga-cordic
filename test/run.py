@@ -11,7 +11,7 @@ sys.path.append("../")
 
 from scripts.synth_and_test.generate_angles import generate_angle
 from scripts.synth_and_test.tb_iterator import tb_iterator
-from scripts.synth_and_test.tb_normalizations import tb_normalizer
+from scripts.synth_and_test.tb_normalizations import *
 
 
 # ============================================================
@@ -281,7 +281,8 @@ test.add_config(
 # --------------------
 config = [
     {
-        "TYPE": "wrapper-bitshift_norm",
+        "NAME": "bitshift",
+        "TYPE_SLV": "001",
         "G_DATA_WIDTH_DENORM": 32,
         "G_DATA_WIDTH_NORM": 29,
         "G_DATA_WIDTH_FRAC": 27,
@@ -292,7 +293,8 @@ config = [
         "G_SHIFT_INPUTS": ("x", "y", "z"),
     },
     {
-        "TYPE": "wrapper-quadrant_map",
+        "NAME": "quadrant",
+        "TYPE_SLV": "100",
         "G_DATA_WIDTH_DENORM": 32,
         "G_DATA_WIDTH_NORM": 29,
         "G_DATA_WIDTH_FRAC": 27,
@@ -303,7 +305,8 @@ config = [
         "G_SHIFT_INPUTS": ("x", "y", "z"),
     },
     {
-        "TYPE": "wrapper-range_reduce",
+        "NAME": "range",
+        "TYPE_SLV": "010",
         "G_DATA_WIDTH_DENORM": 32,
         "G_DATA_WIDTH_NORM": 29,
         "G_DATA_WIDTH_FRAC": 27,
@@ -314,7 +317,8 @@ config = [
         "G_SHIFT_INPUTS": ("x", "y", "z"),
     },
     {
-        "TYPE": "wrapper-bitshift_and_range",
+        "NAME": "bitshift-and-range",
+        "TYPE_SLV": "011",
         "G_DATA_WIDTH_DENORM": 32,
         "G_DATA_WIDTH_NORM": 29,
         "G_DATA_WIDTH_FRAC": 27,
@@ -329,10 +333,10 @@ config = [
 
 testbench = lib.entity("cordic_preprocess_tb")
 test = testbench.test("auto")
-tb_normalizer_obj = tb_normalizer()
+tb_preproc_checker_obj = preproc_checker()
 for cfg in config:
     test.add_config(
-        name=f'TYPE={cfg["TYPE"]}_DW={cfg["G_DATA_WIDTH_DENORM"]}_W={cfg["G_DATA_WIDTH_NORM"]}_F={cfg["G_DATA_WIDTH_FRAC"]}_S={cfg["G_SHIFT_WIDTH"]}_R={cfg["G_RANGE_N_WIDTH"]}_C={cfg["G_SHIFT_COMMON"]}_D={cfg["G_SHIFT_DOUBLE"]}_I={shift_input_str_to_slv(cfg["G_SHIFT_INPUTS"])}',
+        name=f'TYPE={cfg["NAME"]}_DW={cfg["G_DATA_WIDTH_DENORM"]}_W={cfg["G_DATA_WIDTH_NORM"]}_F={cfg["G_DATA_WIDTH_FRAC"]}_S={cfg["G_SHIFT_WIDTH"]}_R={cfg["G_RANGE_N_WIDTH"]}_C={cfg["G_SHIFT_COMMON"]}_D={cfg["G_SHIFT_DOUBLE"]}_I={shift_input_str_to_slv(cfg["G_SHIFT_INPUTS"])}',
         generics=dict(
             G_DATA_WIDTH_DENORM=cfg["G_DATA_WIDTH_DENORM"],
             G_DATA_WIDTH_NORM=cfg["G_DATA_WIDTH_NORM"],
@@ -342,15 +346,16 @@ for cfg in config:
             G_SHIFT_COMMON=cfg["G_SHIFT_COMMON"],
             G_SHIFT_DOUBLE=cfg["G_SHIFT_DOUBLE"],
             G_SHIFT_INPUTS=shift_input_str_to_slv(cfg["G_SHIFT_INPUTS"]),
+            G_NORM_TYPE=int(cfg["TYPE_SLV"]),
         ),
-        pre_config=tb_normalizer_obj.pre_config_wrapper(
+        pre_config=tb_preproc_checker_obj.pre_config_wrapper(
             a_json_filepath=str(G_FILEPATH_JSON),
-            a_type=cfg["TYPE"],
-            a_nbr_of_tests=1,
+            a_type_slv=cfg["TYPE_SLV"],
+            a_nbr_of_tests=1000,
             a_data_width_denorm=cfg["G_DATA_WIDTH_DENORM"],
             a_data_width_frac=cfg["G_DATA_WIDTH_FRAC"],
         ),
-        post_check=tb_normalizer_obj.post_check_wrapper_preprocess(a_cfg=cfg),
+        post_check=tb_preproc_checker_obj.post_check_wrapper(a_cfg=cfg),
     )
 
 # And another testbench etc.

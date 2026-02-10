@@ -71,7 +71,7 @@ architecture bench of cordic_preprocess_tb is
         end loop;
     end procedure;
 
-    function f_shift_input_int_to_slv (
+    function f_int_to_slv (
         value : integer
     ) return std_logic_vector is
         variable v_val : integer;
@@ -128,6 +128,11 @@ begin
         wait;
     end process p_read_input_file;
     -- ===================================================================
+    i_x            <= auto_data_x;
+    i_y            <= auto_data_y;
+    i_z            <= auto_data_z;
+    i_valid        <= auto_data_tvalid;
+    -- ===================================================================
     -- Write output file
     p_write_output_file : process (clk)
         file v_write_file : text open write_mode is output_path(runner_cfg) & "/" & "output_data.txt";
@@ -139,7 +144,11 @@ begin
                 write(v_line, o_x, right, o_x'length + 4);
                 write(v_line, o_y, right, o_y'length + 4);
                 write(v_line, o_z, right, o_z'length + 4);
+                write(v_line, o_bitshift_x, right, o_bitshift_x'length + 4);
+                write(v_line, o_bitshift_y, right, o_bitshift_y'length + 4);
+                write(v_line, o_bitshift_z, right, o_bitshift_z'length + 4);
                 write(v_line, o_quadrant, right, o_quadrant'length + 4);
+                write(v_line, o_range_n, right, o_range_n'length + 4);
                 -- Write to file
                 writeline(v_write_file, v_line);
             end if;
@@ -172,17 +181,19 @@ begin
             o_bitshift_z => o_bitshift_z,
             o_quadrant   => o_quadrant,
             o_range_n    => o_range_n,
-            i_ready      => i_ready,
+            i_ready      => '1',
             o_valid      => o_valid
         );
     -- ===================================================================
     p_config : process (all)
+        variable v_norm_type : std_logic_vector(2 downto 0);
     begin
+        v_norm_type := f_int_to_slv(G_NORM_TYPE);
         -- Bitshift
-        i_config.norm_en           <= '0';
+        i_config.norm_en           <= v_norm_type(0);
         i_config.norm_common       <= '0';
         i_config.norm_shift_double <= '0';
-        i_config.norm_input        <= f_shift_input_int_to_slv(G_SHIFT_INPUTS);
+        i_config.norm_input        <= f_int_to_slv(G_SHIFT_INPUTS);
         if (G_SHIFT_COMMON = true) then
             i_config.norm_common <= '1';
         end if;
@@ -190,10 +201,10 @@ begin
             i_config.norm_shift_double <= '1';
         end if;
         -- Range Reduce
-        i_config.reduction_en          <= '0';
+        i_config.reduction_en          <= v_norm_type(1);
         i_config.reduction_reconstruct <= '0';
         -- Quadrant
-        i_config.quadrant_en <= '0';
+        i_config.quadrant_en <= v_norm_type(2);
     end process p_config;
 
     main : process

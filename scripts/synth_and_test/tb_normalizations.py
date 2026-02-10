@@ -183,42 +183,7 @@ class tb_normalizer:
                             a_iter=i,
                         )
                     else:
-                        # 1. Always generate PI values for wrapper
-                        generate_pi_values(
-                            a_width=a_data_width_denorm,
-                            a_frac=a_data_width_frac,
-                            a_output_path=Path(output_path)
-                            / f"pi_{a_data_width_denorm}b{a_data_width_frac}f.txt",
-                        )
-                        if (
-                            "wrapper-bitshift_norm" in a_type.lower()
-                            or "wrapper-quadrant_map" in a_type.lower()
-                        ):
-                            # 2. Generate input data
-                            x, y, z = generate_input_data(
-                                a_json_obj=json_obj,
-                                a_type="SIN_COS",
-                                a_full_domain=True,
-                                a_iter=i,
-                            )
-                        elif "wrapper-range_reduce" in a_type.lower():
-                            # 2. Generate input data
-                            x, y, z = generate_input_data(
-                                a_json_obj=json_obj,
-                                a_type="SINH_COSH",
-                                a_full_domain=True,
-                                a_iter=i,
-                            )
-                        elif "wrapper-bitshift_and_range" in a_type.lower():
-                            # 2. Generate input data
-                            x, y, z = generate_input_data(
-                                a_json_obj=json_obj,
-                                a_type="SIN_COS",
-                                a_full_domain=True,
-                                a_iter=i,
-                            )
-                        else:
-                            raise KeyError(f"Unknown norm type! {{{a_type}}}")
+                        raise KeyError(f"Unknown norm type! {{{a_type}}}")
 
                     # 2. Convert to fixed-point
                     x_fixed = int(round(x * (2.0**a_data_width_frac)))
@@ -469,10 +434,116 @@ class tb_normalizer:
 
         return post_check
 
-    def post_check_wrapper_preprocess(self, a_cfg: dict):
+
+class preproc_checker:
+
+    def pre_config_wrapper(
+        self,
+        a_json_filepath: str,
+        a_type_slv: str,
+        a_nbr_of_tests: int,
+        a_data_width_denorm: int,
+        a_data_width_frac: int,
+    ):
+        def pre_config(output_path) -> bool:
+            def _format_as_bstring(val_fixed: int):
+
+                if a_data_width_denorm <= 0:
+                    raise ValueError(f"Invalid width: {a_data_width_denorm}")
+
+                # produce two's-complement bit pattern of 'width' bits
+                mask = (1 << a_data_width_denorm) - 1
+                val_masked = mask & val_fixed
+                angle_bstring = format(val_masked, f"0{a_data_width_denorm}b")
+
+                if len(angle_bstring) != a_data_width_denorm:
+                    raise ValueError(
+                        "Binary string was longer than allowed depth! Actual=",
+                        len(angle_bstring),
+                        "vs Expected=",
+                        a_data_width_denorm,
+                    )
+                return angle_bstring
+
+            # Read json
+            json_obj = read_json(a_json_filepath)
+
+            # Norm type
+            bitshift_en = False
+            range_reduce_en = False
+            quadrant_map_en = False
+            type_int = int(a_type_slv)
+            if type_int / 100 >= 1:
+                quadrant_map_en = True
+            if ((type_int / 10) % 10) >= 1:
+                range_reduce_en = True
+            if (type_int % 10) >= 1:
+                bitshift_en = True
+
+            # 1. generate PI values for wrapper
+            generate_pi_values(
+                a_width=a_data_width_denorm,
+                a_frac=a_data_width_frac,
+                a_output_path=Path(output_path)
+                / f"pi_{a_data_width_denorm}b{a_data_width_frac}f.txt",
+            )
+
+            # Dump to text
+            input_path: Path = Path(output_path) / "input_data.txt"
+            input_path.parent.mkdir(exist_ok=True, parents=True)
+            with open(input_path, "w") as f:
+                for i in range(a_nbr_of_tests):
+                    # 2. Generate input data
+                    if bitshift_en == True or quadrant_map_en == True:
+                        x, y, z = generate_input_data(
+                            a_json_obj=json_obj,
+                            a_type="SIN_COS",
+                            a_full_domain=True,
+                            a_iter=i,
+                        )
+                    elif range_reduce_en is True:
+                        x, y, z = generate_input_data(
+                            a_json_obj=json_obj,
+                            a_type="SINH_COSH",
+                            a_full_domain=True,
+                            a_iter=i,
+                        )
+                    else:
+                        raise KeyError(f"No enabled normalizations!")
+
+                    # 2. Convert to fixed-point
+                    x_fixed = int(round(x * (2.0**a_data_width_frac)))
+                    y_fixed = int(round(y * (2.0**a_data_width_frac)))
+                    z_fixed = int(round(z * (2.0**a_data_width_frac)))
+
+                    # 3. Format as binary string
+                    x_bstring = _format_as_bstring(x_fixed)
+                    y_bstring = _format_as_bstring(y_fixed)
+                    z_bstring = _format_as_bstring(z_fixed)
+
+                    # 4. Write columns: X  Y  Z
+                    f.write(f"{x_bstring}\t{y_bstring}\t{z_bstring}\n")
+
+            return True
+
+        return pre_config
+
+    def post_check_wrapper(self, a_cfg: dict):
         def post_check(output_path: str):
 
             checker = True
+
+            # Norm type
+            bitshift_en = False
+            range_reduce_en = False
+            quadrant_map_en = False
+            type_int = int(a_cfg["TYPE_SLV"])
+            if type_int / 100 >= 1:
+                quadrant_map_en = True
+            if ((type_int / 10) % 10) >= 1:
+                range_reduce_en = True
+            if (type_int % 10) >= 1:
+                bitshift_en = True
 
             # 0. Loop for data output entries:
             input_data_path: Path = Path(output_path) / "input_data.txt"
@@ -499,132 +570,35 @@ class tb_normalizer:
                     ] = output_line.split()
 
                     # 2. Convert to float
-                    x_in_f = BitArray(bin=x_in).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    y_in_f = BitArray(bin=y_in).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    z_in_f = BitArray(bin=z_in).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    x_out_f = BitArray(bin=x_out).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    y_out_f = BitArray(bin=y_out).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    z_out_f = BitArray(bin=z_out).int / (2.0**a_cfg.G_DATA_WIDTH_FRAC)
-                    x_shift_out = BitArray(bin=x_shift_out).uint
-                    y_shift_out = BitArray(bin=y_shift_out).uint
-                    z_shift_out = BitArray(bin=z_shift_out).uint
+                    x_in_f = BitArray(bin=x_in).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    y_in_f = BitArray(bin=y_in).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    z_in_f = BitArray(bin=z_in).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    x_out_f = BitArray(bin=x_out).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    y_out_f = BitArray(bin=y_out).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    z_out_f = BitArray(bin=z_out).int / (
+                        2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
+                    )
+                    x_shift_out = BitArray(bin=x_shift_out).int
+                    y_shift_out = BitArray(bin=y_shift_out).int
+                    z_shift_out = BitArray(bin=z_shift_out).int
                     q_out = BitArray(bin=q_out).uint + 1
-                    n_out = BitArray(bin=n_out).uint
+                    n_out = BitArray(bin=n_out).int
+
+                    # Create local object
+                    tb_normalizer_obj = tb_normalizer()
 
                     # 3. Generate reference data
-                    if "wrapper-bitshift_norm" in a_cfg.TYPE.lower():
-                        (
-                            x_ref,
-                            y_ref,
-                            z_ref,
-                            x_shift_ref,
-                            y_shift_ref,
-                            z_shift_ref,
-                        ) = self._LZC(
-                            a_shift_common=a_cfg.G_SHIFT_COMMON,
-                            a_shift_inputs=a_cfg.G_SHIFT_INPUT,
-                            a_shift_double=a_cfg.G_SHIFT_DOUBLE,
-                            a_x=x_in_f,
-                            a_y=y_in_f,
-                            a_z=z_in_f,
-                        )
-                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
-                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
-                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
-                        x_shift_comp = compare_value(
-                            actual=x_shift_out, reference=x_shift_ref
-                        )
-                        y_shift_comp = compare_value(
-                            actual=y_shift_out, reference=y_shift_ref
-                        )
-                        z_shift_comp = compare_value(
-                            actual=z_shift_out, reference=z_shift_ref
-                        )
-                        # 4. Compare to data output entry
-                        print()
-                        print("x_in", x_in_f)
-                        print("y_in", y_in_f)
-                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
-                        print()
-                        print("x_out_shift=", x_shift_out)
-                        print("y_out_shift=", y_shift_out)
-                        print("z_out_shift=", z_shift_out)
-                        print()
-                        print("x_ref", x_ref)
-                        print("y_ref", y_ref)
-                        print("z_ref=", z_ref)
-                        print("x_ref_shift=", x_shift_ref)
-                        print("y_ref_shift=", y_shift_ref)
-                        print("z_ref_shift=", z_shift_ref)
-                        print()
-                        print("=====================================================")
-                        checker = (
-                            checker
-                            and x_comp
-                            and y_comp
-                            and z_comp
-                            and x_shift_comp
-                            and y_shift_comp
-                            and z_shift_comp
-                        )
-
-                    elif "wrapper-quadrant_map" in a_cfg.TYPE.lower():
-                        (x_ref, y_ref, z_ref, q_ref) = self._quadrant_map(
-                            a_x=x_in_f, a_y=y_in_f, a_z=z_in_f
-                        )
-                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
-                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
-                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
-                        q_comp = compare_value(actual=q_out, reference=q_ref)
-
-                        # 4. Compare to data output entry
-                        print()
-                        print("x_in", x_in_f)
-                        print("y_in", y_in_f)
-                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
-                        print()
-                        print("x_out", x_out_f)
-                        print("y_out", y_out_f)
-                        print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
-                        print("q_out=", q_out)
-                        print()
-                        print("x_ref", x_ref)
-                        print("y_ref", y_ref)
-                        print("z_ref=", z_ref)
-                        print("q_ref=", q_ref)
-                        print()
-                        print("=====================================================")
-                        checker = checker and x_comp and y_comp and z_comp and q_comp
-                    elif "wrapper-range_reduce" in a_cfg.TYPE.lower():
-                        # 3. Generate referenced data
-                        x_ref, y_ref, z_ref, n_ref = self._range_reduction(
-                            a_x=x_in_f, a_y=y_in_f, a_z=z_in_f
-                        )
-
-                        # 4. Compare to data output entry
-                        print()
-                        print("x_in", x_in_f)
-                        print("y_in", y_in_f)
-                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
-                        print()
-                        print("x_out", x_out_f)
-                        print("y_out", y_out_f)
-                        print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
-                        print("n_out=", n_out)
-                        print()
-                        print("x_ref", x_ref)
-                        print("y_ref", y_ref)
-                        print("z_ref=", z_ref)
-                        print("n_ref=", n_ref)
-                        print()
-                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
-                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
-                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
-                        n_comp = compare_value(actual=n_out, reference=n_ref)
-                        print("=====================================================")
-
-                        checker = checker and x_comp and y_comp and z_comp and n_comp
-                    elif "wrapper-bitshift_and_range" in a_cfg.TYPE.lower():
+                    if bitshift_en and range_reduce_en:
                         # 3. Generate referenced data
                         (
                             x_ref,
@@ -633,15 +607,15 @@ class tb_normalizer:
                             x_shift_ref,
                             y_shift_ref,
                             z_shift_ref,
-                        ) = self._LZC(
-                            a_shift_common=a_cfg.G_SHIFT_COMMON,
-                            a_shift_inputs=a_cfg.G_SHIFT_INPUT,
-                            a_shift_double=a_cfg.G_SHIFT_DOUBLE,
+                        ) = tb_normalizer_obj._LZC(
+                            a_shift_common=a_cfg["G_SHIFT_COMMON"],
+                            a_shift_inputs=a_cfg["G_SHIFT_INPUTS"],
+                            a_shift_double=a_cfg["G_SHIFT_DOUBLE"],
                             a_x=x_in_f,
                             a_y=y_in_f,
                             a_z=z_in_f,
                         )
-                        x_ref, y_ref, z_ref, n_ref = self._range_reduction(
+                        x_ref, y_ref, z_ref, n_ref = tb_normalizer_obj._range_reduction(
                             a_x=x_ref, a_y=y_ref, a_z=z_ref
                         )
 
@@ -689,6 +663,118 @@ class tb_normalizer:
                             and z_shift_comp
                             and n_comp
                         )
+                    elif bitshift_en:
+                        (
+                            x_ref,
+                            y_ref,
+                            z_ref,
+                            x_shift_ref,
+                            y_shift_ref,
+                            z_shift_ref,
+                        ) = tb_normalizer_obj._LZC(
+                            a_shift_common=a_cfg["G_SHIFT_COMMON"],
+                            a_shift_inputs=a_cfg["G_SHIFT_INPUTS"],
+                            a_shift_double=a_cfg["G_SHIFT_DOUBLE"],
+                            a_x=x_in_f,
+                            a_y=y_in_f,
+                            a_z=z_in_f,
+                        )
+                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                        x_shift_comp = compare_value(
+                            actual=x_shift_out, reference=x_shift_ref
+                        )
+                        y_shift_comp = compare_value(
+                            actual=y_shift_out, reference=y_shift_ref
+                        )
+                        z_shift_comp = compare_value(
+                            actual=z_shift_out, reference=z_shift_ref
+                        )
+                        # 4. Compare to data output entry
+                        print()
+                        print("x_in", x_in_f)
+                        print("y_in", y_in_f)
+                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
+                        print()
+                        print("x_out_shift=", x_shift_out)
+                        print("y_out_shift=", y_shift_out)
+                        print("z_out_shift=", z_shift_out)
+                        print()
+                        print("x_ref", x_ref)
+                        print("y_ref", y_ref)
+                        print("z_ref=", z_ref)
+                        print("x_ref_shift=", x_shift_ref)
+                        print("y_ref_shift=", y_shift_ref)
+                        print("z_ref_shift=", z_shift_ref)
+                        print()
+                        print("=====================================================")
+                        checker = (
+                            checker
+                            and x_comp
+                            and y_comp
+                            and z_comp
+                            and x_shift_comp
+                            and y_shift_comp
+                            and z_shift_comp
+                        )
+
+                    elif quadrant_map_en:
+                        (x_ref, y_ref, z_ref, q_ref) = tb_normalizer_obj._quadrant_map(
+                            a_x=x_in_f, a_y=y_in_f, a_z=z_in_f
+                        )
+                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                        q_comp = compare_value(actual=q_out, reference=q_ref)
+
+                        # 4. Compare to data output entry
+                        print()
+                        print("x_in", x_in_f)
+                        print("y_in", y_in_f)
+                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
+                        print()
+                        print("x_out", x_out_f)
+                        print("y_out", y_out_f)
+                        print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
+                        print("q_out=", q_out)
+                        print()
+                        print("x_ref", x_ref)
+                        print("y_ref", y_ref)
+                        print("z_ref=", z_ref)
+                        print("q_ref=", q_ref)
+                        print()
+                        print("=====================================================")
+                        checker = checker and x_comp and y_comp and z_comp and q_comp
+                    elif range_reduce_en:
+                        # 3. Generate referenced data
+                        x_ref, y_ref, z_ref, n_ref = tb_normalizer_obj._range_reduction(
+                            a_x=x_in_f, a_y=y_in_f, a_z=z_in_f
+                        )
+
+                        # 4. Compare to data output entry
+                        print()
+                        print("x_in", x_in_f)
+                        print("y_in", y_in_f)
+                        print("z_in=", z_in_f, "z_in_deg", np.rad2deg(z_in_f))
+                        print()
+                        print("x_out", x_out_f)
+                        print("y_out", y_out_f)
+                        print("z_out=", z_out_f, "z_out_deg", np.rad2deg(z_out_f))
+                        print("n_out=", n_out)
+                        print()
+                        print("x_ref", x_ref)
+                        print("y_ref", y_ref)
+                        print("z_ref=", z_ref)
+                        print("n_ref=", n_ref)
+                        print()
+                        x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                        y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                        z_comp = compare_value(actual=z_out_f, reference=z_ref)
+                        n_comp = compare_value(actual=n_out, reference=n_ref)
+                        print("=====================================================")
+
+                        checker = checker and x_comp and y_comp and z_comp and n_comp
 
             return checker
 
