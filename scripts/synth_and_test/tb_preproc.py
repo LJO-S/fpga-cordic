@@ -155,7 +155,6 @@ class tb_normalizer:
                             a_json_obj=json_obj,
                             a_type="SINH_COSH",
                             a_full_domain=True,
-                            a_iter=i,
                         )
                     elif "bitshift_norm" in a_type.lower():
                         x = random.uniform(
@@ -180,7 +179,6 @@ class tb_normalizer:
                             a_json_obj=json_obj,
                             a_type="SIN_COS",
                             a_full_domain=True,
-                            a_iter=i,
                         )
                     else:
                         raise KeyError(f"Unknown norm type! {{{a_type}}}")
@@ -499,14 +497,12 @@ class preproc_checker:
                             a_json_obj=json_obj,
                             a_type="SIN_COS",
                             a_full_domain=True,
-                            a_iter=i,
                         )
                     elif range_reduce_en is True:
                         x, y, z = generate_input_data(
                             a_json_obj=json_obj,
                             a_type="SINH_COSH",
                             a_full_domain=True,
-                            a_iter=i,
                         )
                     else:
                         raise KeyError(f"No enabled normalizations!")

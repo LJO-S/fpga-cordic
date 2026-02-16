@@ -68,7 +68,6 @@ class tb_iterator:
                         a_json_obj=json_obj,
                         a_type=a_type,
                         a_full_domain=a_full_domain,
-                        a_iter=i,
                     )
 
                     # 2. Convert to fixed-point

@@ -1,3 +1,13 @@
+TODO
+
+- Fix preprocess
+    -- Do a TB!
+- Fix postprocess
+- Fix cordic_core
+- Fix python script to generate FW code from microcodes.json. Should we load it in DDR? Flash? BRAM?
+
+
+
 -------------------
 CORDIC Algorithm
 -------------------

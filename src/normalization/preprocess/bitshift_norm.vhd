@@ -136,9 +136,9 @@ begin
             -----------------
 
             -- synthesis translate_off
-            v_iflog_x := f_ilog2(std_logic_vector(r_x_abs_int)); -- TODO remove these!
-            v_iflog_y := f_ilog2(std_logic_vector(r_y_abs_int)); -- TODO remove these!
-            v_iflog_z := f_ilog2(std_logic_vector(r_y_abs_int)); -- TODO remove these!
+            v_iflog_x := f_ilog2(std_logic_vector(r_x_abs_int));
+            v_iflog_y := f_ilog2(std_logic_vector(r_y_abs_int));
+            v_iflog_z := f_ilog2(std_logic_vector(r_y_abs_int));
             -- synthesis translate_on
 
             -- Calculate Leading Zero Count

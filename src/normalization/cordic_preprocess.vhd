@@ -5,11 +5,6 @@ use ieee.math_real.all;
 -- 
 use work.cordic_pkg.all;
 -- 
--- 
--- TODO 
--- 1. Fix all these generics mapping from run.py
--- 2. Fix actual PI filepath
--- 3. Fix how we write down values from the output file
 entity cordic_preprocess is
     generic (
         G_DATA_WIDTH_DENORM : natural := 35;
@@ -22,7 +17,7 @@ entity cordic_preprocess is
     port (
         clk : in std_logic;
         -- Configuration
-        i_config : t_normalization;
+        i_config : in t_normalization;
         -- Input Data
         i_x     : in std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
         i_y     : in std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
@@ -118,7 +113,7 @@ begin
     w_norm_common <= r_config.norm_common;
     w_norm_double <= r_config.norm_shift_double;
     -- ===================================================================
-    process (clk)
+    p_ctrl_fsm : process (clk)
     begin
         if rising_edge(clk) then
             -- Default
@@ -192,7 +187,7 @@ begin
                     ----------------------------------------------------------
             end case;
         end if;
-    end process;
+    end process p_ctrl_fsm;
 
     -- ===================================================================
     -- Bitshift normalization

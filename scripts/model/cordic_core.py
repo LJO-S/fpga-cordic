@@ -8,11 +8,6 @@ import numpy as np
 import math
 
 
-# TODO
-# Implement rest of functions
-# Try out new normalization scheme
-
-
 # --------------------------
 # Enums
 # --------------------------
@@ -443,8 +438,8 @@ def post_processing(
             if norm_cfg.reduction_reconstruct:
                 e_pos_r = x_corr + y_corr
                 e_neg_r = x_corr - y_corr
-                e_pos_z = (2**range_n) * e_pos_r
-                e_neg_z = (2 ** (-range_n)) * e_neg_r
+                e_pos_z = e_pos_r * (2**range_n)
+                e_neg_z = e_neg_r * (2 ** (-range_n))
                 x_corr = (e_pos_z + e_neg_z) / 2
                 y_corr = (e_pos_z - e_neg_z) / 2
 

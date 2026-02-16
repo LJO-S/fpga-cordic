@@ -259,8 +259,6 @@ steps = [
             "z": (Init.INPUT_Z,),
         },
         a_normalization=DataNormalization(
-            norm_enable=False,
-            norm_inputs=("x", "y"),
             reduction_enable=True,
             reduction_reconstruct=True,
         ),

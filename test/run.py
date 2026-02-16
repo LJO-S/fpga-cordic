@@ -11,7 +11,8 @@ sys.path.append("../")
 
 from scripts.synth_and_test.generate_angles import generate_angle
 from scripts.synth_and_test.tb_iterator import tb_iterator
-from scripts.synth_and_test.tb_normalizations import *
+from scripts.synth_and_test.tb_preproc import *
+from scripts.synth_and_test.tb_postproc import *
 
 
 # ============================================================
@@ -358,6 +359,144 @@ for cfg in config:
         post_check=tb_preproc_checker_obj.post_check_wrapper(a_cfg=cfg),
     )
 
+# --------------------
+# Post-process Bitshift
+# --------------------
+testbench = lib.entity("postproc_bitshift_tb")
+test = testbench.test("auto")
+tb_postproc_checker_obj = postproc_checker()
+
+G_DATA_WIDTH_DENORM = 32
+G_DATA_WIDTH_FRAC = 23
+G_SHIFT_WIDTH = 5
+G_MODE_ROTATIONAL = False
+G_SUBMODE_LINEAR = False
+G_SHIFT_DOUBLE = False
+
+test.add_config(
+    name=f"geometric-standard",
+    generics=dict(
+        G_MODE_ROTATIONAL=G_MODE_ROTATIONAL,
+        G_SUBMODE_LINEAR=G_SUBMODE_LINEAR,
+        G_SHIFT_DOUBLE=G_SHIFT_DOUBLE,
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_SHIFT_WIDTH=G_SHIFT_WIDTH,
+    ),
+    pre_config=tb_postproc_checker_obj.pre_config_wrapper_bitshift(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_nbr_of_tests=1000,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_postproc_checker_obj.post_check_wrapper_bitshift(
+        a_mode_rotational=G_MODE_ROTATIONAL,
+        a_submode_linear=G_SUBMODE_LINEAR,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+)
+G_SHIFT_DOUBLE = True
+test.add_config(
+    name=f"geometric-double",
+    generics=dict(
+        G_MODE_ROTATIONAL=G_MODE_ROTATIONAL,
+        G_SUBMODE_LINEAR=G_SUBMODE_LINEAR,
+        G_SHIFT_DOUBLE=G_SHIFT_DOUBLE,
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_SHIFT_WIDTH=G_SHIFT_WIDTH,
+    ),
+    pre_config=tb_postproc_checker_obj.pre_config_wrapper_bitshift(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_nbr_of_tests=1000,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_postproc_checker_obj.post_check_wrapper_bitshift(
+        a_mode_rotational=G_MODE_ROTATIONAL,
+        a_submode_linear=G_SUBMODE_LINEAR,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+)
+
+G_SUBMODE_LINEAR = True
+G_MODE_ROTATIONAL = False
+test.add_config(
+    name=f"algebraic-vectoring",
+    generics=dict(
+        G_MODE_ROTATIONAL=G_MODE_ROTATIONAL,
+        G_SUBMODE_LINEAR=G_SUBMODE_LINEAR,
+        G_SHIFT_DOUBLE=G_SHIFT_DOUBLE,
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_SHIFT_WIDTH=G_SHIFT_WIDTH,
+    ),
+    pre_config=tb_postproc_checker_obj.pre_config_wrapper_bitshift(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_nbr_of_tests=1000,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_postproc_checker_obj.post_check_wrapper_bitshift(
+        a_mode_rotational=G_MODE_ROTATIONAL,
+        a_submode_linear=G_SUBMODE_LINEAR,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+)
+G_SUBMODE_LINEAR = True
+G_MODE_ROTATIONAL = True
+test.add_config(
+    name=f"algebraic-rotational",
+    generics=dict(
+        G_MODE_ROTATIONAL=G_MODE_ROTATIONAL,
+        G_SUBMODE_LINEAR=G_SUBMODE_LINEAR,
+        G_SHIFT_DOUBLE=G_SHIFT_DOUBLE,
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_SHIFT_WIDTH=G_SHIFT_WIDTH,
+    ),
+    pre_config=tb_postproc_checker_obj.pre_config_wrapper_bitshift(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_nbr_of_tests=1000,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_postproc_checker_obj.post_check_wrapper_bitshift(
+        a_mode_rotational=G_MODE_ROTATIONAL,
+        a_submode_linear=G_SUBMODE_LINEAR,
+        a_shift_double=G_SHIFT_DOUBLE,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+)
+
+# --------------------
+# Post-process Quadrant Map
+# --------------------
+testbench = lib.entity("postproc_quadrant_map_tb")
+test = testbench.test("auto")
+tb_postproc_checker_obj = postproc_checker()
+
+G_DATA_WIDTH_DENORM = 32
+G_DATA_WIDTH_FRAC = 23
+test.add_config(
+    name=f".",
+    generics=dict(
+        G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+        G_DATA_WIDTH_FRAC=G_DATA_WIDTH_FRAC,
+    ),
+    pre_config=tb_postproc_checker_obj.pre_config_wrapper_quadrant_map(
+        a_json_filepath=str(G_FILEPATH_JSON),
+        a_nbr_of_tests=1000,
+        a_data_width_denorm=G_DATA_WIDTH_DENORM,
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+    post_check=tb_postproc_checker_obj.post_check_wrapper_quadrant_map(
+        a_data_width_frac=G_DATA_WIDTH_FRAC,
+    ),
+)
 # And another testbench etc.
 # ============================================================
 

@@ -58,6 +58,7 @@ package cordic_pkg is
         OUTPUT_Y,
         OUTPUT_Z
     );
+    
     type t_initialization is record
         source : t_initialization_type;
         offset : std_logic_vector(C_DATA_WIDTH - 1 downto 0);
@@ -87,6 +88,7 @@ package cordic_pkg is
     function f_mode_translate (mode_slv    : std_logic) return t_mode;
     function f_submode_translate (mode_slv : std_logic_vector(1 downto 0)) return t_submode;
     function f_real_to_signed (val : real; data_width : natural; frac_width : natural) return signed;
+    
 
 end package;
 
@@ -137,4 +139,5 @@ package body cordic_pkg is
         v_signed := to_signed(v_integer, data_width);
         return v_signed;
     end function;
+    -- ----------------------------------------------------------
 end package body;

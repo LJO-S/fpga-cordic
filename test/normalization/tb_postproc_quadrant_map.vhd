@@ -1,7 +1,7 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 -- 
 use std.textio.all;
 -- 
@@ -11,17 +11,16 @@ use work.tb_pkg.all;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-entity quadrant_map_tb is
+entity postproc_quadrant_map_tb is
     generic (
         runner_cfg          : string;
         G_DATA_WIDTH_DENORM : natural;
-        G_DATA_WIDTH_NORM   : natural;
         G_DATA_WIDTH_FRAC   : natural;
         G_PI_FILEPATH       : string := output_path(runner_cfg) & "/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
     );
 end;
 
-architecture bench of quadrant_map_tb is
+architecture bench of postproc_quadrant_map_tb is
     -- Clock period
     constant clk_period : time := 5 ns;
     -- Generics
@@ -30,11 +29,11 @@ architecture bench of quadrant_map_tb is
     signal i_x        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     signal i_y        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     signal i_z        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal i_quadrant : std_logic_vector(1 downto 0);
     signal i_valid    : std_logic;
-    signal o_x        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_y        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_z        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_quadrant : std_logic_vector(1 downto 0);
+    signal o_x        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal o_y        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal o_z        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     signal o_valid    : std_logic;
     -- Testbench
     signal tb_input_data_x_float  : real    := 0.0;
@@ -43,13 +42,15 @@ architecture bench of quadrant_map_tb is
     signal tb_output_data_x_float : real    := 0.0;
     signal tb_output_data_y_float : real    := 0.0;
     signal tb_output_data_r_float : real    := 0.0;
+    signal tb_output_data_n_int   : integer := 0;
     signal tb_auto_set            : boolean := false;
     signal tb_auto_done           : boolean := false;
     signal auto_data_x            : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     signal auto_data_y            : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     signal auto_data_z            : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal auto_quadrant          : std_logic_vector(1 downto 0);
     signal auto_data_tvalid       : std_logic;
-
+    -- Procedure
     procedure wait_clock (clk_ticks : integer) is
     begin
         for i in 0 to clk_ticks - 1 loop
@@ -62,27 +63,33 @@ begin
     -- ===================================================================
     -- Read input file
     p_read_input_file : process
-        file v_read_file  : text open read_mode is output_path(runner_cfg) & "/" & "input_data.txt";
-        variable v_line   : line;
-        variable v_data_x : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
-        variable v_data_y : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
-        variable v_data_z : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+        file v_read_file    : text open read_mode is output_path(runner_cfg) & "/" & "input_data.txt";
+        variable v_line     : line;
+        variable v_data_x   : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+        variable v_data_y   : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+        variable v_data_z   : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+        variable v_quadrant : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
     begin
         tb_auto_done <= false;
         wait until tb_auto_set = TRUE;
         while not endfile(v_read_file) loop
             readline(v_read_file, v_line);
+            -- Data
             BINARY_READ(v_line, v_data_x);
             BINARY_READ(v_line, v_data_y);
             BINARY_READ(v_line, v_data_z);
+            -- Shifts
+            BINARY_READ(v_line, v_quadrant);
             auto_data_x      <= v_data_x;
             auto_data_y      <= v_data_y;
             auto_data_z      <= v_data_z;
+            auto_quadrant    <= v_quadrant(1 downto 0);
             auto_data_tvalid <= '1';
             wait_clock(1);
             auto_data_x      <= (others => '0');
             auto_data_y      <= (others => '0');
             auto_data_z      <= (others => '0');
+            auto_quadrant    <= (others => '0');
             auto_data_tvalid <= '0';
             wait until o_valid = '1';
             wait_clock(2);
@@ -102,21 +109,21 @@ begin
                 write(v_line, o_x, right, o_x'length + 4);
                 write(v_line, o_y, right, o_y'length + 4);
                 write(v_line, o_z, right, o_z'length + 4);
-                write(v_line, o_quadrant, right, o_quadrant'length + 4);
                 -- Write to file
                 writeline(v_write_file, v_line);
             end if;
         end if;
     end process p_write_output_file;
     -- ===================================================================
-    i_x     <= auto_data_x;
-    i_y     <= auto_data_y;
-    i_z     <= auto_data_z;
-    i_valid <= auto_data_tvalid;
-    quadrant_map_inst : entity work.quadrant_map
+    i_x        <= auto_data_x;
+    i_y        <= auto_data_y;
+    i_z        <= auto_data_z;
+    i_quadrant <= auto_quadrant;
+    i_valid    <= auto_data_tvalid;
+    -- ===================================================================    
+    postproc_quadrant_map_inst : entity work.postproc_quadrant_map
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
-            G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,
             G_DATA_WIDTH_FRAC   => G_DATA_WIDTH_FRAC,
             G_PI_FILEPATH       => G_PI_FILEPATH
         )
@@ -126,11 +133,11 @@ begin
             i_x        => i_x,
             i_y        => i_y,
             i_z        => i_z,
+            i_quadrant => i_quadrant,
             i_valid    => i_valid,
             o_x        => o_x,
             o_y        => o_y,
             o_z        => o_z,
-            o_quadrant => o_quadrant,
             o_valid    => o_valid
         );
     -- ===================================================================
@@ -146,12 +153,5 @@ begin
         test_runner_cleanup(runner);
     end process main;
     -- ===================================================================
-    -- Update debugs
-    tb_input_data_x_float  <= real(to_integer(signed(i_x))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_input_data_y_float  <= real(to_integer(signed(i_y))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_input_data_z_float  <= real(to_integer(signed(i_z))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_output_data_x_float <= real(to_integer(signed(o_x))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_output_data_y_float <= real(to_integer(signed(o_y))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_output_data_r_float <= real(to_integer(signed(o_z))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    -- ===================================================================
+
 end;
