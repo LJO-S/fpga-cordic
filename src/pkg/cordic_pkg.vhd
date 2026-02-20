@@ -134,7 +134,8 @@ package body cordic_pkg is
     begin
         v_integer := integer(ceil(val * (2.0 ** frac_width)));
         assert v_integer <= (2 ** (data_width - 1))
-        report "The desired data_width cannot hold this variable!"
+        report "The desired data_width cannot hold this variable! Desired=" & integer'image(v_integer) &
+        " vs Max=" & integer'image(2 ** (data_width - 1))
             severity failure;
         v_signed := to_signed(v_integer, data_width);
         return v_signed;

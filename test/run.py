@@ -168,7 +168,16 @@ for TYPE in (
 G_DATA_WIDTH_DENORM = 35
 G_DATA_WIDTH_NORM = 32
 G_DATA_WIDTH_FRAC = 30
-G_RANGE_N_WIDTH = 10
+G_SHIFT_WIDTH = int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))
+G_RANGE_N_WIDTH = int(
+    math.log2(
+        int(
+            math.ceil(
+                (2 ** (G_DATA_WIDTH_DENORM - 1 - G_DATA_WIDTH_FRAC)) / math.log(2)
+            )
+        )
+    )
+)
 G_FILEPATH_JSON = Path(
     f"../scripts/microcodes.json"
 )  # completely unecessary for this test but pre_cfg uses it...
@@ -507,8 +516,16 @@ tb_postproc_checker_obj = postproc_checker()
 
 G_DATA_WIDTH_DENORM = 32
 G_DATA_WIDTH_FRAC = 23
-G_RANGE_N_WIDTH = 10
-G_SHIFT_WIDTH = 5
+G_SHIFT_WIDTH = int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))
+G_RANGE_N_WIDTH = int(
+    math.log2(
+        int(
+            math.ceil(
+                (2 ** (G_DATA_WIDTH_DENORM - 1 - G_DATA_WIDTH_FRAC)) / math.log(2)
+            )
+        )
+    )
+)
 
 config = [
     {
