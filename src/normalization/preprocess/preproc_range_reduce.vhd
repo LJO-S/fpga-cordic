@@ -5,7 +5,7 @@ use ieee.math_real.all;
 -- 
 use work.cordic_pkg.all;
 -- 
-entity range_reduce is
+entity preproc_range_reduce is
     generic (
         G_DATA_WIDTH_DENORM : natural := 35;
         G_DATA_WIDTH_NORM   : natural := 32;
@@ -26,9 +26,9 @@ entity range_reduce is
         o_n     : out std_logic_vector(G_RANGE_N_WIDTH - 1 downto 0);
         o_valid : out std_logic
     );
-end entity range_reduce;
+end entity preproc_range_reduce;
 
-architecture rtl of range_reduce is
+architecture rtl of preproc_range_reduce is
     -----------------
     --  Functions
     -----------------

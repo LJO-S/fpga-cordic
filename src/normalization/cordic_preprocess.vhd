@@ -192,7 +192,7 @@ begin
     -- ===================================================================
     -- Bitshift normalization
     -- Shift down to [1,2)
-    bitshift_norm_inst : entity work.bitshift_norm
+    preproc_bitshift_norm_inst : entity work.preproc_bitshift_norm
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,
@@ -221,7 +221,7 @@ begin
     -- Range Reduction
     -- Reduce angle z to the primary interval r in [-ln2/2, ln2/2] (or similar).
     -- This variant reduces by integer multiples of ln(2): z = r + n*ln2
-    range_reduce_inst : entity work.range_reduce
+    preproc_range_reduce_inst : entity work.preproc_range_reduce
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,
@@ -244,7 +244,7 @@ begin
     -- ===================================================================
     -- Quadrant Mapping
     -- Maps angle z into the principal quadrant [0, pi/2).
-    quadrant_map_inst : entity work.quadrant_map
+    preproc_quadrant_map_inst : entity work.preproc_quadrant_map
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,

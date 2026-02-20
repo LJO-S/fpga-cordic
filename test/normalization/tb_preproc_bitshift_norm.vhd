@@ -12,7 +12,7 @@ use work.tb_pkg.all;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-entity bitshift_norm_tb is
+entity preproc_bitshift_norm_tb is
     generic (
         runner_cfg     : string;
         G_SHIFT_INPUTS : std_logic_vector(2 downto 0);
@@ -21,7 +21,7 @@ entity bitshift_norm_tb is
     );
 end;
 
-architecture bench of bitshift_norm_tb is
+architecture bench of preproc_bitshift_norm_tb is
     -- Clock period
     constant clk_period : time := 5 ns;
     -- Generics
@@ -134,7 +134,7 @@ begin
     i_z            <= auto_data_z;
     i_valid        <= auto_data_tvalid;
     -- ===================================================================
-    bitshift_norm_inst : entity work.bitshift_norm
+    preproc_bitshift_norm_inst : entity work.preproc_bitshift_norm
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,

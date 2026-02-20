@@ -81,98 +81,98 @@ add wave -noupdate -expand -group Pre-Process -radix decimal /cordic_preprocess_
 add wave -noupdate -expand -group Pre-Process -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/w_quadrant_z_out
 add wave -noupdate -expand -group Pre-Process -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/w_quadrant_out
 add wave -noupdate -expand -group Pre-Process -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/r_quadrant_out
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/clk
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_shift_double
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_shift_common
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_shift_inputs
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_x
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_y
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_z
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/i_valid
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_x
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_y
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_z
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_x_shift
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_y_shift
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_z_shift
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/o_valid
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_common
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_double
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_double_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_x_abs_int
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_y_abs_int
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_z_abs_int
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_valid
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_valid_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_valid_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_valid_d2
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_x
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_y
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_z
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_x_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_y_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_z_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_x_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_y_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_shift_z_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_x
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_y
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_z
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_x_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_y_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_z_d0
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_x_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_y_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_z_d1
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_xval_shift
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_yval_shift
-add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/bitshift_norm_inst/r_zval_shift
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/clk
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/i_x
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/i_y
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/i_z
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/i_valid
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/o_x
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/o_y
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/o_r
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/o_n
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/o_valid
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_x
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_y
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_z
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_x_d0
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_y_d0
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_z_d0
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_x_d1
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_y_d1
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_z_d1
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_x_d2
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_y_d2
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_valid
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_valid_d0
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_valid_d1
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_valid_d2
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_range_n_mult
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_range_n
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_range_n_d0
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_range_n_d1
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_subtract
-add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/range_reduce_inst/r_range_r
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/clk
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/i_x
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/i_y
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/i_z
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/i_valid
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/o_x
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/o_y
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/o_z
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/o_quadrant
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/o_valid
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/r_x
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/r_y
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/r_z
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/r_quadrant
-add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/quadrant_map_inst/r_valid
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/clk
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_shift_double
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_shift_common
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_shift_inputs
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_x
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_y
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_z
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/i_valid
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_x
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_y
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_z
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_x_shift
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_y_shift
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_z_shift
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/o_valid
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_common
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_double
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_double_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_x_abs_int
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_y_abs_int
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_z_abs_int
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_valid
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_valid_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_valid_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_valid_d2
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_x
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_y
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_z
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_x_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_y_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_z_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_x_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_y_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_shift_z_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_x
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_y
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_z
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_x_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_y_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_z_d0
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_x_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_y_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_z_d1
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_xval_shift
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_yval_shift
+add wave -noupdate -group {Bitshift Norm} -radix decimal /cordic_preprocess_tb/cordic_preprocess_inst/preproc_bitshift_norm_inst/r_zval_shift
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/clk
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/i_x
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/i_y
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/i_z
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/i_valid
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/o_x
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/o_y
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/o_r
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/o_n
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/o_valid
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_x
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_y
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_z
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_x_d0
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_y_d0
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_z_d0
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_x_d1
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_y_d1
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_z_d1
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_x_d2
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_y_d2
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_valid
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_valid_d0
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_valid_d1
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_valid_d2
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_range_n_mult
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_range_n
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_range_n_d0
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_range_n_d1
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_subtract
+add wave -noupdate -group {Range Reduce} /cordic_preprocess_tb/cordic_preprocess_inst/preproc_range_reduce_inst/r_range_r
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/clk
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/i_x
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/i_y
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/i_z
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/i_valid
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/o_x
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/o_y
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/o_z
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/o_quadrant
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/o_valid
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/r_x
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/r_y
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/r_z
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/r_quadrant
+add wave -noupdate -group {Quadrant Map} -radix unsigned /cordic_preprocess_tb/cordic_preprocess_inst/preproc_quadrant_map_inst/r_valid
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {154239 ps} 0}
 quietly wave cursor active 1

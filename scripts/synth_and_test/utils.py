@@ -52,16 +52,16 @@ def generate_input_data(
     elif a_type.upper() == "MULT":
         y = 0.0
         if a_full_domain is True:
-            x = random.uniform(0, 2**a_width - 1)
-            z = random.uniform(0, 2**a_width - 1)
+            x = random.uniform(0, 2 ** (a_width - 1) - 1)
+            z = random.uniform(0, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0, 1)
             z = random.uniform(0, 1)
     elif a_type.upper() == "DIV":
         z = 0.0
         if a_full_domain is True:
-            x = random.uniform(0, 2**a_width - 1)
-            y = random.uniform(0, 2**a_width - 1)
+            x = random.uniform(0, 2 ** (a_width - 1) - 1)
+            y = random.uniform(0, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0, 1)
             y = random.uniform(0, x)
@@ -69,19 +69,22 @@ def generate_input_data(
         y = 0.0
         z = 0.0
         if a_full_domain is True:
-            x = random.uniform(0.1, 2**a_width - 1)
+            x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0.5, 1)
     elif a_type.upper() == "SINH_COSH":
         x = fetch_init_value(entry["init"]["x"]["type"])
         y = 0.0
         if a_full_domain is True:
-            z = random.uniform(0, 2**a_width - 1)
+            # Note: for SINH_COSH the Z represents exp(Z). We use N later to
+            # shift everything to a correct value. The integer width decides
+            # how much we can shift it. Thus, the largest Z is decided by how
+            # many integer bits we have available times ln(2).
+            z = random.uniform(0, math.log(2) * (a_width - 1))
         else:
             z = random.uniform(0, 1)
     elif a_type.upper() == "ARCTANH":
         x = random.uniform(0, 0.1)
-        # y = random.uniform(0, x)
         y = x / 2
         z = 0.0
     else:
@@ -280,6 +283,48 @@ def anti_quadrant_map(a_x: float, a_y: float, a_z: float, a_quadrant: int):
         z_corr = (2.0 * math.pi) - z_corr
         y_corr = -y_corr
 
+    return x_corr, y_corr, z_corr
+
+
+def range_reduction(a_x: float, a_y: float, a_z: float):
+    """
+    Reduce angle z to the primary interval r in [-ln2/2, ln2/2] (or similar).
+    This variant reduces by integer multiples of ln(2): z = r + n*ln2
+    """
+    ln2 = math.log(2.0)
+    # In FPGA, store log2(e) = 1/ln(2) ~= 1.442695 as a constant
+    # ... also store ln(2) of course
+    n = int(math.floor(a_z / ln2))
+    r = a_z - (n * ln2)
+    return a_x, a_y, r, n
+
+
+def anti_range_reduction(
+    a_mode_vectoring: bool,
+    a_submode_hyperbolic: bool,
+    a_reduction_reconstruct: bool,
+    a_int_width: int,
+    a_range_n: int,
+    a_shift_x: int,
+    a_x: float,
+    a_y: float,
+    a_z: float,
+):
+    x_corr, y_corr, z_corr = a_x, a_y, a_z
+    if a_mode_vectoring is True and a_submode_hyperbolic is True:
+        z_corr = z_corr + 0.5 * math.log(2.0) * a_shift_x
+    else:
+        ln2 = math.log(2.0)
+        z_corr = z_corr + (a_range_n * ln2)
+        if a_reduction_reconstruct:
+            if abs(a_range_n) > (a_int_width):
+                raise ValueError("Too large input value!")
+            e_pos_r = x_corr + y_corr
+            e_neg_r = x_corr - y_corr
+            e_pos_z = e_pos_r * (2**a_range_n)
+            e_neg_z = e_neg_r * (2 ** (-a_range_n))
+            x_corr = (e_pos_z + e_neg_z) / 2
+            y_corr = (e_pos_z - e_neg_z) / 2
     return x_corr, y_corr, z_corr
 
 

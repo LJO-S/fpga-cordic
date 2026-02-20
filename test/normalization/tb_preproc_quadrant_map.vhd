@@ -11,31 +11,31 @@ use work.tb_pkg.all;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-entity range_reduce_tb is
+entity preproc_quadrant_map_tb is
     generic (
         runner_cfg          : string;
-        G_DATA_WIDTH_DENORM : natural := 35;
-        G_DATA_WIDTH_NORM   : natural := 32;
-        G_DATA_WIDTH_FRAC   : natural := 30;
-        G_RANGE_N_WIDTH     : natural := 10
+        G_DATA_WIDTH_DENORM : natural;
+        G_DATA_WIDTH_NORM   : natural;
+        G_DATA_WIDTH_FRAC   : natural;
+        G_PI_FILEPATH       : string := output_path(runner_cfg) & "/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
     );
 end;
 
-architecture bench of range_reduce_tb is
+architecture bench of preproc_quadrant_map_tb is
     -- Clock period
     constant clk_period : time := 5 ns;
     -- Generics
     -- Ports
-    signal clk     : std_logic := '0';
-    signal i_x     : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
-    signal i_y     : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
-    signal i_z     : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
-    signal i_valid : std_logic;
-    signal o_x     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_y     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_r     : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
-    signal o_n     : std_logic_vector(G_RANGE_N_WIDTH - 1 downto 0);
-    signal o_valid : std_logic;
+    signal clk        : std_logic := '0';
+    signal i_x        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal i_y        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal i_z        : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
+    signal i_valid    : std_logic;
+    signal o_x        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
+    signal o_y        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
+    signal o_z        : std_logic_vector(G_DATA_WIDTH_NORM - 1 downto 0);
+    signal o_quadrant : std_logic_vector(1 downto 0);
+    signal o_valid    : std_logic;
     -- Testbench
     signal tb_input_data_x_float  : real    := 0.0;
     signal tb_input_data_y_float  : real    := 0.0;
@@ -43,7 +43,6 @@ architecture bench of range_reduce_tb is
     signal tb_output_data_x_float : real    := 0.0;
     signal tb_output_data_y_float : real    := 0.0;
     signal tb_output_data_r_float : real    := 0.0;
-    signal tb_output_data_n_int   : integer := 0;
     signal tb_auto_set            : boolean := false;
     signal tb_auto_done           : boolean := false;
     signal auto_data_x            : std_logic_vector(G_DATA_WIDTH_DENORM - 1 downto 0);
@@ -102,8 +101,8 @@ begin
                 -- Write output obtained
                 write(v_line, o_x, right, o_x'length + 4);
                 write(v_line, o_y, right, o_y'length + 4);
-                write(v_line, o_r, right, o_r'length + 4);
-                write(v_line, o_n, right, o_n'length + 4);
+                write(v_line, o_z, right, o_z'length + 4);
+                write(v_line, o_quadrant, right, o_quadrant'length + 4);
                 -- Write to file
                 writeline(v_write_file, v_line);
             end if;
@@ -114,39 +113,38 @@ begin
     i_y     <= auto_data_y;
     i_z     <= auto_data_z;
     i_valid <= auto_data_tvalid;
-    -- ===================================================================
-    range_reduce_inst : entity work.range_reduce
+    quadrant_map_inst : entity work.quadrant_map
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,
             G_DATA_WIDTH_FRAC   => G_DATA_WIDTH_FRAC,
-            G_RANGE_N_WIDTH     => G_RANGE_N_WIDTH
+            G_PI_FILEPATH       => G_PI_FILEPATH
         )
         port map
         (
-            clk     => clk,
-            i_x     => i_x,
-            i_y     => i_y,
-            i_z     => i_z,
-            i_valid => i_valid,
-            o_x     => o_x,
-            o_y     => o_y,
-            o_r     => o_r,
-            o_n     => o_n,
-            o_valid => o_valid
+            clk        => clk,
+            i_x        => i_x,
+            i_y        => i_y,
+            i_z        => i_z,
+            i_valid    => i_valid,
+            o_x        => o_x,
+            o_y        => o_y,
+            o_z        => o_z,
+            o_quadrant => o_quadrant,
+            o_valid    => o_valid
         );
     -- ===================================================================
     main : process
     begin
         test_runner_setup(runner, runner_cfg);
         if run("auto") then
+            info("Hello world!");
             wait until clk = '1';
             tb_auto_set <= true;
             wait until tb_auto_done = true;
         end if;
         test_runner_cleanup(runner);
     end process main;
-
     -- ===================================================================
     -- Update debugs
     tb_input_data_x_float  <= real(to_integer(signed(i_x))) / (2.0 ** G_DATA_WIDTH_FRAC);
@@ -154,7 +152,6 @@ begin
     tb_input_data_z_float  <= real(to_integer(signed(i_z))) / (2.0 ** G_DATA_WIDTH_FRAC);
     tb_output_data_x_float <= real(to_integer(signed(o_x))) / (2.0 ** G_DATA_WIDTH_FRAC);
     tb_output_data_y_float <= real(to_integer(signed(o_y))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_output_data_r_float <= real(to_integer(signed(o_r))) / (2.0 ** G_DATA_WIDTH_FRAC);
-    tb_output_data_n_int   <= to_integer(signed(o_n));
+    tb_output_data_r_float <= real(to_integer(signed(o_z))) / (2.0 ** G_DATA_WIDTH_FRAC);
     -- ===================================================================
 end;

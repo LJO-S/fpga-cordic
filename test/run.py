@@ -173,7 +173,7 @@ G_FILEPATH_JSON = Path(
     f"../scripts/microcodes.json"
 )  # completely unecessary for this test but pre_cfg uses it...
 
-testbench = lib.entity("range_reduce_tb")
+testbench = lib.entity("preproc_range_reduce_tb")
 test = testbench.test("auto")
 tb_normalizer_obj = tb_normalizer()
 
@@ -218,7 +218,7 @@ G_SHIFT_COMMON = False
 G_SHIFT_DOUBLE = False
 G_SHIFT_INPUTS = ("x", "y", "z")
 
-testbench = lib.entity("bitshift_norm_tb")
+testbench = lib.entity("preproc_bitshift_norm_tb")
 test = testbench.test("auto")
 tb_normalizer_obj = tb_normalizer()
 
@@ -253,7 +253,7 @@ G_DATA_WIDTH_DENORM = 32
 G_DATA_WIDTH_NORM = 29
 G_DATA_WIDTH_FRAC = 27
 
-testbench = lib.entity("quadrant_map_tb")
+testbench = lib.entity("preproc_quadrant_map_tb")
 test = testbench.test("auto")
 tb_normalizer_obj = tb_normalizer()
 
@@ -497,6 +497,163 @@ test.add_config(
         a_data_width_frac=G_DATA_WIDTH_FRAC,
     ),
 )
+
+# --------------------
+# Post-process Range Reduction
+# --------------------
+testbench = lib.entity("postproc_range_reduce_tb")
+test = testbench.test("auto")
+tb_postproc_checker_obj = postproc_checker()
+
+G_DATA_WIDTH_DENORM = 32
+G_DATA_WIDTH_FRAC = 23
+G_RANGE_N_WIDTH = 10
+G_SHIFT_WIDTH = 5
+
+config = [
+    {
+        "NAME": "normal-non-reconstructive",
+        "G_MODE_VECTORING": False,
+        "G_SUBMODE_HYPERBOLIC": False,
+        "G_REDUCTION_RECONSTRUCT": False,
+    },
+    {
+        "NAME": "special",
+        "G_MODE_VECTORING": True,
+        "G_SUBMODE_HYPERBOLIC": True,
+        "G_REDUCTION_RECONSTRUCT": False,
+    },
+    {
+        "NAME": "special-not-fulfilled_A",
+        "G_MODE_VECTORING": True,
+        "G_SUBMODE_HYPERBOLIC": False,
+        "G_REDUCTION_RECONSTRUCT": False,
+    },
+    {
+        "NAME": "special-not-fulfilled_B",
+        "G_MODE_VECTORING": False,
+        "G_SUBMODE_HYPERBOLIC": True,
+        "G_REDUCTION_RECONSTRUCT": False,
+    },
+    {
+        "NAME": "normal-reconstructive",
+        "G_MODE_VECTORING": False,
+        "G_SUBMODE_HYPERBOLIC": False,
+        "G_REDUCTION_RECONSTRUCT": True,
+    },
+]
+
+tb_postproc_checker_obj = postproc_checker()
+
+for cfg in config:
+    test.add_config(
+        name=f"{cfg["NAME"]}",
+        generics=dict(
+            G_MODE_VECTORING=cfg["G_MODE_VECTORING"],
+            G_SUBMODE_HYPERBOLIC=cfg["G_SUBMODE_HYPERBOLIC"],
+            G_REDUCTION_RECONSTRUCT=cfg["G_REDUCTION_RECONSTRUCT"],
+            G_DATA_WIDTH_DENORM=G_DATA_WIDTH_DENORM,
+            G_DATA_WIDTH_FRAC=G_DATA_WIDTH_FRAC,
+            G_SHIFT_WIDTH=G_SHIFT_WIDTH,
+            G_RANGE_N_WIDTH=G_RANGE_N_WIDTH,
+        ),
+        pre_config=tb_postproc_checker_obj.pre_config_wrapper_range_reduce(
+            a_json_filepath=str(G_FILEPATH_JSON),
+            a_nbr_of_tests=1000,
+            a_data_width_denorm=G_DATA_WIDTH_DENORM,
+            a_data_width_frac=G_DATA_WIDTH_FRAC,
+        ),
+        post_check=tb_postproc_checker_obj.post_check_wrapper_range_reduce(
+            a_mode_vectoring=cfg["G_MODE_VECTORING"],
+            a_submode_hyperbolic=cfg["G_SUBMODE_HYPERBOLIC"],
+            a_reduction_reconstruct=cfg["G_REDUCTION_RECONSTRUCT"],
+            a_data_width_denorm=G_DATA_WIDTH_DENORM,
+            a_data_width_frac=G_DATA_WIDTH_FRAC,
+        ),
+    )
+
+# --------------------
+# Post-Process
+# --------------------
+testbench = lib.entity("cordic_postprocess_tb")
+test = testbench.test("auto")
+tb_postproc_checker_obj = postproc_checker()
+
+G_DATA_WIDTH_DENORM = 32
+G_DATA_WIDTH_NORM = 25
+G_DATA_WIDTH_FRAC = 23
+G_SHIFT_WIDTH = int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))
+G_RANGE_N_WIDTH = 10
+
+default_dict = dict(
+    name="0",
+    norm_en="0",
+    norm_input="000",
+    norm_shift_double="0",
+    reduction_en="0",
+    reduction_reconstruct="0",
+    quadrant_en="0",
+    G_MODE="0",
+    G_SUBMODE="0",
+    G_DATA_WIDTH_DENORM="32",
+    G_DATA_WIDTH_NORM="25",
+    G_DATA_WIDTH_FRAC="25",
+    G_SHIFT_WIDTH=str(int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))),
+    G_RANGE_N_WIDTH="10",
+)
+
+case_dict = [
+    dict(
+        name="none",
+    ),
+    dict(
+        name="norm",
+        norm_en="1",
+    ),
+    dict(
+        name="norm-double",
+        norm_en="1",
+        norm_shift_double="1",
+    ),
+    dict(
+        name="range_reduce",
+        reduction_en="1",
+    ),
+    dict(
+        name="range_reduce-reconstruct",
+        reduction_en="1",
+        reduction_reconstruct="1",
+    ),
+    dict(
+        name="quadrant_map",
+        quadrant_en="1",
+    ),
+]
+# TODO add specials
+
+tb_postproc_checker_obj = postproc_checker()
+
+for override in case_dict:
+
+    cfg = {**default_dict, **override}
+
+    test.add_config(
+        name=f"{cfg["name"]}",
+        generics=dict(encoded_tb_cfg=encode(cfg)),
+        pre_config=tb_postproc_checker_obj.pre_config_wrapper_range_reduce(
+            a_json_filepath=str(G_FILEPATH_JSON),
+            a_nbr_of_tests=1000,
+            a_data_width_denorm=cfg["G_DATA_WIDTH_DENORM"],
+            a_data_width_frac=cfg["G_DATA_WIDTH_FRAC"],
+        ),
+        post_check=tb_postproc_checker_obj.post_check_wrapper_range_reduce(
+            a_mode_vectoring=cfg["G_MODE_VECTORING"],
+            a_submode_hyperbolic=cfg["G_SUBMODE_HYPERBOLIC"],
+            a_reduction_reconstruct=cfg["G_REDUCTION_RECONSTRUCT"],
+            a_data_width_denorm=G_DATA_WIDTH_DENORM,
+            a_data_width_frac=G_DATA_WIDTH_FRAC,
+        ),
+    )
 # And another testbench etc.
 # ============================================================
 

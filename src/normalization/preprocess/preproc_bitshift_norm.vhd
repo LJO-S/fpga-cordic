@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
-entity bitshift_norm is
+entity preproc_bitshift_norm is
     generic (
         G_DATA_WIDTH_DENORM : natural := 35;
         G_DATA_WIDTH_NORM   : natural := 32;
@@ -29,9 +29,9 @@ entity bitshift_norm is
         o_z_shift : out std_logic_vector(G_SHIFT_WIDTH - 1 downto 0);
         o_valid   : out std_logic
     );
-end entity bitshift_norm;
+end entity preproc_bitshift_norm;
 
-architecture rtl of bitshift_norm is
+architecture rtl of preproc_bitshift_norm is
     -----------------
     --  Functions
     -----------------

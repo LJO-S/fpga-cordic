@@ -88,7 +88,7 @@ begin
     o_z     <= std_logic_vector(r_z);
     o_valid <= r_valid;
     -- ===================================================================
-    p_range_reduce_denorm : process (clk)
+    p_bitshift_denorm : process (clk)
     begin
         if rising_edge(clk) then
             -- Default
@@ -163,6 +163,6 @@ begin
                     -------------------------------------------
             end case;
         end if;
-    end process p_range_reduce_denorm;
+    end process p_bitshift_denorm;
     -- ===================================================================
 end architecture;

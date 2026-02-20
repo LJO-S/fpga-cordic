@@ -28,7 +28,6 @@ package cordic_pkg is
         -- Shift normalization
         norm_en           : std_logic;
         norm_input        : std_logic_vector(2 downto 0);
-        norm_common       : std_logic;
         norm_shift_double : std_logic;
         -- Range reduction
         reduction_en          : std_logic;

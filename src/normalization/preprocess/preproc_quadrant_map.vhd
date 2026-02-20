@@ -7,7 +7,7 @@ use std.textio.all;
 -- 
 use work.cordic_pkg.all;
 -- 
-entity quadrant_map is
+entity preproc_quadrant_map is
     generic (
         G_DATA_WIDTH_DENORM : natural := 32;
         G_DATA_WIDTH_NORM   : natural := 32;
@@ -26,9 +26,9 @@ entity quadrant_map is
         o_quadrant : out std_logic_vector(1 downto 0);
         o_valid    : out std_logic
     );
-end entity quadrant_map;
+end entity preproc_quadrant_map;
 
-architecture rtl of quadrant_map is
+architecture rtl of preproc_quadrant_map is
     ----------------
     -- Types
     ----------------

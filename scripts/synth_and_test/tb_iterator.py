@@ -113,14 +113,11 @@ class tb_iterator:
             # 0. Loop for data output entries:
             input_data_path: Path = Path(output_path) / "input_data.txt"
             output_data_path: Path = Path(output_path) / "output_data.txt"
-            onk = 0
+
             with open(output_data_path, "r") as f_out, open(
                 input_data_path, "r"
             ) as f_in:
                 for line in f_out:
-                    # print(onk)
-                    # onk += 1
-                    # print(line)
 
                     # 1. Read input/output data
                     input_line = f_in.readline()
