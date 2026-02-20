@@ -115,7 +115,7 @@ begin
     i_z     <= auto_data_z;
     i_valid <= auto_data_tvalid;
     -- ===================================================================
-    range_reduce_inst : entity work.range_reduce
+    range_reduce_inst : entity work.preproc_range_reduce
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,

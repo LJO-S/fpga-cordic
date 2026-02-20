@@ -583,7 +583,15 @@ G_DATA_WIDTH_DENORM = 32
 G_DATA_WIDTH_NORM = 25
 G_DATA_WIDTH_FRAC = 23
 G_SHIFT_WIDTH = int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))
-G_RANGE_N_WIDTH = 10
+G_RANGE_N_WIDTH = int(
+    math.log2(
+        int(
+            math.ceil(
+                (2 ** (G_DATA_WIDTH_DENORM - 1 - G_DATA_WIDTH_FRAC)) / math.log(2)
+            )
+        )
+    )
+)
 
 default_dict = dict(
     name="0",
@@ -597,11 +605,10 @@ default_dict = dict(
     G_SUBMODE="0",
     G_DATA_WIDTH_DENORM="32",
     G_DATA_WIDTH_NORM="25",
-    G_DATA_WIDTH_FRAC="25",
+    G_DATA_WIDTH_FRAC="23",
     G_SHIFT_WIDTH=str(int(math.log2(G_DATA_WIDTH_DENORM - G_DATA_WIDTH_NORM))),
-    G_RANGE_N_WIDTH="10",
+    G_RANGE_N_WIDTH=str(G_RANGE_N_WIDTH),
 )
-
 case_dict = [
     dict(
         name="none",
@@ -640,19 +647,10 @@ for override in case_dict:
     test.add_config(
         name=f"{cfg["name"]}",
         generics=dict(encoded_tb_cfg=encode(cfg)),
-        pre_config=tb_postproc_checker_obj.pre_config_wrapper_range_reduce(
-            a_json_filepath=str(G_FILEPATH_JSON),
-            a_nbr_of_tests=1000,
-            a_data_width_denorm=cfg["G_DATA_WIDTH_DENORM"],
-            a_data_width_frac=cfg["G_DATA_WIDTH_FRAC"],
+        pre_config=tb_postproc_checker_obj.pre_config_wrapper(
+            a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=1000, a_cfg=cfg
         ),
-        post_check=tb_postproc_checker_obj.post_check_wrapper_range_reduce(
-            a_mode_vectoring=cfg["G_MODE_VECTORING"],
-            a_submode_hyperbolic=cfg["G_SUBMODE_HYPERBOLIC"],
-            a_reduction_reconstruct=cfg["G_REDUCTION_RECONSTRUCT"],
-            a_data_width_denorm=G_DATA_WIDTH_DENORM,
-            a_data_width_frac=G_DATA_WIDTH_FRAC,
-        ),
+        post_check=tb_postproc_checker_obj.post_check_wrapper(a_cfg=cfg),
     )
 # And another testbench etc.
 # ============================================================

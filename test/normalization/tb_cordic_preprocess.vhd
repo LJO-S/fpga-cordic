@@ -191,11 +191,11 @@ begin
         v_norm_type := f_int_to_slv(G_NORM_TYPE);
         -- Bitshift
         i_config.norm_en           <= v_norm_type(0);
-        i_config.norm_common       <= '0';
+        i_config.norm_shift_common       <= '0';
         i_config.norm_shift_double <= '0';
         i_config.norm_input        <= f_int_to_slv(G_SHIFT_INPUTS);
         if (G_SHIFT_COMMON = true) then
-            i_config.norm_common <= '1';
+            i_config.norm_shift_common <= '1';
         end if;
         if (G_SHIFT_DOUBLE = true) then
             i_config.norm_shift_double <= '1';

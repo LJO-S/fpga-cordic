@@ -106,6 +106,11 @@ begin
     begin
         if rising_edge(clk) then
             -- Default
+            r_bitshift_valid_in     <= '0';
+            r_range_reduce_valid_in <= '0';
+            r_quad_map_valid_in     <= '0';
+
+            -- FSM
             case s_postproc_state is
                 when IDLE =>
                     r_x                       <= resize(signed(i_x), G_DATA_WIDTH_DENORM);
@@ -158,11 +163,11 @@ begin
                 when QUADRANT_MAP =>
                     r_config.quadrant_en <= '0';
                     if (w_quad_map_valid_out = '1') then
-                        r_x <= signed(w_quad_map_x_out);
-                        r_y <= signed(w_quad_map_y_out);
-                        r_z <= signed(w_quad_map_z_out);
+                        r_x              <= signed(w_quad_map_x_out);
+                        r_y              <= signed(w_quad_map_y_out);
+                        r_z              <= signed(w_quad_map_z_out);
+                        s_postproc_state <= CHECK;
                     end if;
-                    s_postproc_state <= CHECK;
                     ----------------------------------------------------------
                 when DONE =>
                     if (i_ready = '1') then

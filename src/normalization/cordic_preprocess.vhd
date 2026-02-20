@@ -110,7 +110,7 @@ begin
     o_quadrant   <= r_quadrant_out;
     -- Internals
     w_norm_input  <= r_config.norm_input;
-    w_norm_common <= r_config.norm_common;
+    w_norm_common <= r_config.norm_shift_common;
     w_norm_double <= r_config.norm_shift_double;
     -- ===================================================================
     p_ctrl_fsm : process (clk)

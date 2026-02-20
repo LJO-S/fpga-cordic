@@ -113,7 +113,7 @@ begin
     i_y     <= auto_data_y;
     i_z     <= auto_data_z;
     i_valid <= auto_data_tvalid;
-    quadrant_map_inst : entity work.quadrant_map
+    quadrant_map_inst : entity work.preproc_quadrant_map
         generic map(
             G_DATA_WIDTH_DENORM => G_DATA_WIDTH_DENORM,
             G_DATA_WIDTH_NORM   => G_DATA_WIDTH_NORM,

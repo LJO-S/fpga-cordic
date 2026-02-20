@@ -14,8 +14,7 @@ context vunit_lib.vunit_context;
 entity cordic_postprocess_tb is
     generic (
         runner_cfg     : string;
-        encoded_tb_cfg : string;
-        G_PI_FILEPATH  : string := output_path(runner_cfg) & "/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt"
+        encoded_tb_cfg : string
     );
 end;
 
@@ -67,8 +66,9 @@ architecture bench of cordic_postprocess_tb is
     constant G_DATA_WIDTH_FRAC   : natural  := integer'value(TB_CONFIG.G_DATA_WIDTH_FRAC);
     constant G_SHIFT_WIDTH       : natural  := integer'value(TB_CONFIG.G_SHIFT_WIDTH);
     constant G_RANGE_N_WIDTH     : natural  := integer'value(TB_CONFIG.G_RANGE_N_WIDTH);
+    constant G_PI_FILEPATH       : string   := output_path(runner_cfg) & "/pi_" & integer'image(G_DATA_WIDTH_DENORM) & "b" & integer'image(G_DATA_WIDTH_FRAC) & "f.txt";
     -- Ports
-    signal clk          : std_logic;
+    signal clk          : std_logic := '0';
     signal i_config     : t_normalization;
     signal i_mode       : t_mode;
     signal i_submode    : t_submode;
@@ -113,6 +113,34 @@ architecture bench of cordic_postprocess_tb is
             wait until rising_edge(clk);
         end loop;
     end procedure;
+
+    function f_int_to_std_logic (
+        int : integer
+    ) return std_logic is
+    begin
+        if (int = 0) then
+            return '0';
+        end if;
+        return '1';
+    end function;
+
+    function f_int_to_3b_std_logic_vector(
+        int : integer
+    ) return std_logic_vector is
+        variable v_slv : std_logic_vector(2 downto 0);
+    begin
+        v_slv := (others => '0');
+        if (int mod 2 = 1) then
+            v_slv(0) := '1';
+        end if;
+        if ((int/10) mod 2 = 1) then
+            v_slv(1) := '1';
+        end if;
+        if ((int/100) mod 2 = 1) then
+            v_slv(2) := '1';
+        end if;
+        return v_slv;
+    end function;
 begin
     -- ===================================================================
     clk <= not clk after clk_period/2;
@@ -146,10 +174,11 @@ begin
             auto_data_x      <= v_data_x;
             auto_data_y      <= v_data_y;
             auto_data_z      <= v_data_z;
-            auto_range_n     <= v_range_n;
             auto_shift_x     <= v_shift_x;
             auto_shift_y     <= v_shift_y;
             auto_shift_z     <= v_shift_z;
+            auto_range_n     <= v_range_n;
+            auto_quadrant    <= v_quadrant;
             auto_data_tvalid <= '1';
             wait_clock(1);
             auto_data_x      <= (others => '0');
@@ -188,21 +217,22 @@ begin
         CIRCULAR when (G_SUBMODE = 1) else
         LINEAR;
     -- Config
-    i_config.norm_en               <= integer'value(TB_CONFIG.norm_en);
-    i_config.norm_input            <= integer'value(TB_CONFIG.norm_input);
-    i_config.norm_shift_double     <= integer'value(TB_CONFIG.norm_shift_double);
-    i_config.reduction_en          <= integer'value(TB_CONFIG.reduction_en);
-    i_config.reduction_reconstruct <= integer'value(TB_CONFIG.reduction_reconstruct);
-    i_config.quadrant_en           <= integer'value(TB_CONFIG.quadrant_en);
-    i_x          <= auto_data_x;
-    i_y          <= auto_data_y;
-    i_z          <= auto_data_z;
-    i_bitshift_x <= auto_shift_x(i_bitshift_x'range);
-    i_bitshift_y <= auto_shift_y(i_bitshift_y'range);
-    i_bitshift_z <= auto_shift_z(i_bitshift_z'range);
-    i_range_n    <= auto_range_n(i_range_n'range);
-    i_quadrant   <= auto_quadrant(i_quadrant'range);
-    i_valid      <= auto_data_tvalid;
+    i_config.norm_en               <= f_int_to_std_logic(integer'value(TB_CONFIG.norm_en));
+    i_config.norm_input            <= f_int_to_3b_std_logic_vector(integer'value(TB_CONFIG.norm_input));
+    i_config.norm_shift_double     <= f_int_to_std_logic(integer'value(TB_CONFIG.norm_shift_double));
+    i_config.reduction_en          <= f_int_to_std_logic(integer'value(TB_CONFIG.reduction_en));
+    i_config.reduction_reconstruct <= f_int_to_std_logic(integer'value(TB_CONFIG.reduction_reconstruct));
+    i_config.quadrant_en           <= f_int_to_std_logic(integer'value(TB_CONFIG.quadrant_en));
+    i_x                            <= auto_data_x(i_x'range);
+    i_y                            <= auto_data_y(i_y'range);
+    i_z                            <= auto_data_z(i_z'range);
+    i_bitshift_x                   <= auto_shift_x(i_bitshift_x'range);
+    i_bitshift_y                   <= auto_shift_y(i_bitshift_y'range);
+    i_bitshift_z                   <= auto_shift_z(i_bitshift_z'range);
+    i_range_n                      <= auto_range_n(i_range_n'range);
+    i_quadrant                     <= auto_quadrant(i_quadrant'range);
+    i_valid                        <= auto_data_tvalid;
+    i_ready                        <= '1';
     -- ===================================================================
     cordic_postprocess_inst : entity work.cordic_postprocess
         generic map(
