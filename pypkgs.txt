@@ -2,3 +2,4 @@ numpy
 vunit_hdl
 scipy
 bitstring
+Jinja2

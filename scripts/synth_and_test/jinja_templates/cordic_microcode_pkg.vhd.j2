@@ -1,0 +1,83 @@
+{# Template for the CORDIC Microcode Package #}
+--================================================================================================
+-- Generated via Jinja2 Template through ../scripts/synth_and_test/generate_microcodes.py
+--================================================================================================
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.math_real.all;
+-- 
+use work.cordic_pkg.all;
+-- 
+package cordic_microcode_pkg is
+    -----------------------
+    -- Constant Pool
+    -----------------------
+    constant C_CONSTANT_POOL_SIZE : natural := {{ constants|length }};
+    type t_offset_pool is array (0 to C_CONSTANT_POOL_SIZE - 1) of signed({{ data_width - 1 }} downto 0);
+
+    constant C_OFFSET_POOL : t_offset_pool := (
+        {%- for val in constants %}
+        {{ loop.index0 }} => {{ val | to_fixed_binary }}, -- {{ val }}
+        {%- endfor %}
+        others => (others => '0')
+    );
+
+    -----------------------
+    -- Function PTR table
+    -----------------------
+    type t_function_array is array (0 to {{ functions|length - 1}}) of unsigned({{ (steps|length)|log2 - 1 }} downto 0);
+
+    constant C_FUNCTION_ARRAY : t_function_array := (
+        {%- for func in functions %}
+        {{ loop.index0 }} => to_unsigned({{ func.start_addr }}, {{ (steps|length)|log2 }}){{ "," if not loop.last }} -- {{ func.name }}
+        {%- endfor %}
+    );
+
+    -----------------------
+    -- Microcode ROM
+    -----------------------
+    constant C_MICROCODE_ROM_SIZE : natural := {{ steps|length }};
+    constant C_MICROCODE_ROM : t_microcode_step_array(0 to C_MICROCODE_ROM_SIZE - 1) := (
+        {%- for step in steps %}
+        -- {{ step.comment }}
+        {{ loop.index0 }} => (
+            mode    => {{ step.mode }},
+            submode => {{ step.submode }},
+            init    => (
+                0 => (
+                    source   => {{ step.init.x.type }}, 
+                    const_id => to_unsigned({{ step.init.x.const_id }}, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    ), -- X
+                1 => (
+                    source   => {{ step.init.y.type }}, 
+                    const_id => to_unsigned({{ step.init.y.const_id }}, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    ), -- Y
+                2 => (
+                    source   => {{ step.init.z.type }}, 
+                    const_id => to_unsigned({{ step.init.z.const_id }}, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    ) -- Z
+            ),
+            norm => (
+                -- Bitshift Norm
+                norm_en    => '{{ "1" if step.normalization.norm_en else "0" }}',
+                norm_input => (
+                    0 => '{{ "1" if step.normalization.norm_input.x else "0" }}', -- X
+                    1 => '{{ "1" if step.normalization.norm_input.y else "0" }}', -- Y
+                    2 => '{{ "1" if step.normalization.norm_input.z else "0" }}'  -- Z
+                ),
+                norm_shift_double   => '{{ "1" if step.normalization.norm_shift_double else "0" }}',
+                norm_shift_common   => '0',
+                -- Range Reduce
+                reduction_en          => '{{ "1" if step.normalization.reduction_en else "0" }}',
+                reduction_reconstruct => '{{ "1" if step.normalization.reduction_reconstruct else "0" }}',
+                -- Quadrant Map
+                quadrant_en           => '{{ "1" if step.normalization.quadrant_en else "0" }}'
+            ),
+            last => '{{ "1" if step.last else "0" }}'
+        ){{ "," if not loop.last }}
+        {% endfor %}
+    );
+
+
+end package;

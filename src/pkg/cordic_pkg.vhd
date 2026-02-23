@@ -17,7 +17,7 @@ package cordic_pkg is
     constant C_DATA_WIDTH        : natural := 32;
     constant C_FRAC_WIDTH        : natural := 30;
     constant C_NBR_OF_ITERATIONS : natural := 40;
-    constant C_MAX_NBR_OF_STEPS  : natural := 4;
+    constant C_NBR_OF_FUNCTIONS  : natural := 20;
     -- ---------------
     -- Types
     -- ---------------
@@ -58,27 +58,23 @@ package cordic_pkg is
         OUTPUT_Y,
         OUTPUT_Z
     );
-    
+
     type t_initialization is record
-        source : t_initialization_type;
-        offset : std_logic_vector(C_DATA_WIDTH - 1 downto 0);
+        source   : t_initialization_type;
+        const_id : unsigned(integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))) - 1 downto 0);
     end record;
 
     type t_initialization_array is array (0 to 2) of t_initialization;
 
     type t_step is record
-        mode    : t_mode;
-        submode : t_submode;
-        init    : t_initialization_array;
-        norm    : t_normalization;
+        mode     : t_mode;
+        submode  : t_submode;
+        init     : t_initialization_array;
+        norm     : t_normalization;
+        last     : std_logic;
     end record;
 
-    type t_step_array is array (natural range <>) of t_step;
-
-    type t_microcode is record
-        step         : t_step;
-        nbr_of_steps : integer;
-    end record;
+    type t_microcode_step_array is array (natural range <>) of t_step;
 
     -- TODO microcode registry
 
@@ -88,8 +84,6 @@ package cordic_pkg is
     function f_mode_translate (mode_slv    : std_logic) return t_mode;
     function f_submode_translate (mode_slv : std_logic_vector(1 downto 0)) return t_submode;
     function f_real_to_signed (val : real; data_width : natural; frac_width : natural) return signed;
-    
-
 end package;
 
 package body cordic_pkg is
@@ -135,7 +129,7 @@ package body cordic_pkg is
         v_integer := integer(ceil(val * (2.0 ** frac_width)));
         assert v_integer <= (2 ** (data_width - 1))
         report "The desired data_width cannot hold this variable! Desired=" & integer'image(v_integer) &
-        " vs Max=" & integer'image(2 ** (data_width - 1))
+            " vs Max=" & integer'image(2 ** (data_width - 1))
             severity failure;
         v_signed := to_signed(v_integer, data_width);
         return v_signed;

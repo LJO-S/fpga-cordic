@@ -1,149 +1,1050 @@
 {
-    "SIN_COS": [
-        {
-            "mode": "ROTATIONAL",
-            "submode": "CIRCULAR",
-            "init": {
-                "x": {
-                    "type": "PROC_GAIN",
-                    "offset": 0.0
-                },
-                "y": {
-                    "type": "CONST",
-                    "offset": 0.0
-                },
-                "z": {
-                    "type": "INPUT_Z",
-                    "offset": 0.0
-                }
+    "default": {
+        "mode": "ROTATIONAL",
+        "submode": "CIRCULAR",
+        "init": {
+            "x": {
+                "type": "INPUT_X",
+                "offset": 0.0
             },
-            "comment": "Sine & Cosine step 1/1 (Note: functions as 'POL2REC')"
-        }
-    ],
-    "ARCTAN": [
-        {
-            "mode": "VECTORING",
-            "submode": "CIRCULAR",
-            "init": {
-                "x": {
-                    "type": "INPUT_X",
-                    "offset": 0.0
-                },
-                "y": {
-                    "type": "INPUT_Y",
-                    "offset": 0.0
-                },
-                "z": {
-                    "type": "CONST",
-                    "offset": 0.0
-                }
+            "y": {
+                "type": "INPUT_Y",
+                "offset": 0.0
             },
-            "comment": "Arctan step 1/1 (Note: functions as 'REC2POL')"
-        }
-    ],
-    "MULT": [
-        {
-            "mode": "ROTATIONAL",
-            "submode": "LINEAR",
-            "init": {
-                "x": {
-                    "type": "INPUT_X",
-                    "offset": 0.0
-                },
-                "y": {
-                    "type": "INPUT_Y",
-                    "offset": 0.0
-                },
-                "z": {
-                    "type": "INPUT_Z",
-                    "offset": 0.0
-                }
+            "z": {
+                "type": "INPUT_Z",
+                "offset": 0.0
+            }
+        },
+        "normalization": {
+            "norm_en": false,
+            "norm_input": {
+                "x": false,
+                "y": false,
+                "z": false
             },
-            "comment": "MULT step 1/1"
-        }
-    ],
-    "DIV": [
-        {
-            "mode": "VECTORING",
-            "submode": "LINEAR",
-            "init": {
-                "x": {
-                    "type": "INPUT_X",
-                    "offset": 0.0
+            "norm_shift_double": false,
+            "reduction_en": false,
+            "reduction_reconstruct": false,
+            "quadrant_en": false
+        },
+        "comment": "A default step"
+    },
+    "functions": {
+        "SIN_COS": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
                 },
-                "y": {
-                    "type": "INPUT_Y",
-                    "offset": 0.0
+                "normalization": {
+                    "quadrant_en": true
                 },
-                "z": {
-                    "type": "INPUT_Z",
-                    "offset": 0.0
-                }
+                "comment": "Sine & Cosine step 1/1 (Note: functions as 'POL2REC')"
+            }
+        ],
+        "TAN": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "quadrant_en": true
+                },
+                "comment": "Tan step 1/2"
             },
-            "comment": "DIV step 1/1"
-        }
-    ],
-    "RECIPROCAL": [
-        {
-            "mode": "VECTORING",
-            "submode": "LINEAR",
-            "init": {
-                "x": {
-                    "type": "INPUT_X",
-                    "offset": 0.0
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
                 },
-                "y": {
-                    "type": "CONST",
-                    "offset": 1.0
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
                 },
-                "z": {
-                    "type": "INPUT_Z",
-                    "offset": 0.0
-                }
+                "comment": "Tan step 2/2"
+            }
+        ],
+        "ARCTAN": [
+            {
+                "mode": "VECTORING",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "Arctan step 1/1 (Note: functions as 'REC2POL')"
+            }
+        ],
+        "MULT": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "z": true
+                    }
+                },
+                "comment": "MULT step 1/1"
+            }
+        ],
+        "DIV": [
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "DIV step 1/1"
+            }
+        ],
+        "RECIPROCAL": [
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "RECIP step 1/1"
+            }
+        ],
+        "SINH_COSH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "reduction_en": true,
+                    "reduction_reconstruct": true
+                },
+                "comment": "SINH_COSH step 1/1"
+            }
+        ],
+        "TANH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "reduction_en": true,
+                    "reduction_reconstruct": true
+                },
+                "comment": "TANH step 1/2"
             },
-            "comment": "RECIP step 1/1"
-        }
-    ],
-    "SINH_COSH": [
-        {
-            "mode": "ROTATIONAL",
-            "submode": "HYPERBOLIC",
-            "init": {
-                "x": {
-                    "type": "PROC_GAIN_HYP_INV",
-                    "offset": 0.0
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
                 },
-                "y": {
-                    "type": "CONST",
-                    "offset": 0.0
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
                 },
-                "z": {
-                    "type": "INPUT_Z",
-                    "offset": 0.0
-                }
+                "comment": "TANH step 2/2"
+            }
+        ],
+        "ARCTANH": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCTANH step 1/1"
+            }
+        ],
+        "SQRT": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.36451172962
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": -0.36451172962
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    },
+                    "norm_shift_double": true,
+                    "reduction_en": true
+                },
+                "comment": "SQRT step 1/1"
+            }
+        ],
+        "LN": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 1.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": -1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    },
+                    "reduction_en": true
+                },
+                "comment": "LN step 1/2"
             },
-            "comment": "SINH_COSH step 1/1"
-        }
-    ],
-    "ARCTANH": [
-        {
-            "mode": "VECTORING",
-            "submode": "HYPERBOLIC",
-            "init": {
-                "x": {
-                    "type": "INPUT_X",
-                    "offset": 0.0
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "CONST",
+                        "offset": 0.5
+                    },
+                    "y": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
                 },
-                "y": {
-                    "type": "INPUT_Y",
-                    "offset": 0.0
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
                 },
-                "z": {
-                    "type": "CONST",
-                    "offset": 0.0
-                }
+                "comment": "LN step 2/2"
+            }
+        ],
+        "EXP": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "reduction_en": true,
+                    "reduction_reconstruct": true
+                },
+                "comment": "EXP step 1/1"
+            }
+        ],
+        "POW": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 1.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": -1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    },
+                    "reduction_en": true
+                },
+                "comment": "POW step 1/3"
             },
-            "comment": "ARCTANH step 1/1"
-        }
-    ]
+            {
+                "mode": "ROTATIONAL",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "z": true
+                    }
+                },
+                "comment": "POW step 2/3 (note: Z needs to be 2x the required value)"
+            },
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "reduction_en": true,
+                    "reduction_reconstruct": true
+                },
+                "comment": "POW step 3/3"
+            }
+        ],
+        "ARCCOSH": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOSH step 1/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOSH step 2/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Z",
+                        "offset": 1.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Z",
+                        "offset": -1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOSH step 3/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "CONST",
+                        "offset": 0.5
+                    },
+                    "y": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOSH step 4/4"
+            }
+        ],
+        "ARCSINH": [
+            {
+                "mode": "VECTORING",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSINH step 1/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Y",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSINH step 2/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Z",
+                        "offset": 1.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Z",
+                        "offset": -1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSINH step 3/4"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "CONST",
+                        "offset": 0.5
+                    },
+                    "y": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSINH step 4/4"
+            }
+        ],
+        "CSC": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "quadrant_en": true
+                },
+                "comment": "CSC step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input":{
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "CSC step 2/2"
+            }
+        ],
+        "SEC": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "quadrant_en": true
+                },
+                "comment": "SEC step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input":{
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "SEC step 2/2"
+            }
+        ],
+        "COT": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "quadrant_en": true
+                },
+                "comment": "COT step 1/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input":{
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "COT step 2/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input":{
+                        "x": true,
+                        "y": true
+                    }
+                },
+                "comment": "COT step 3/3"
+            }
+        ],
+        "SECH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "SECH step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "SECH step 2/2"
+            }
+        ],
+        "CSCH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "CSCH step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "CSCH step 2/2"
+            }
+        ],
+        "COTH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 1/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 2/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 1.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 3/3"
+            }
+        ],
+        "ARCSIN": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_Y",
+                        "offset": 0.36451172962
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": -0.36451172962
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSIN step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCSIN step 2/2"
+            }
+        ],
+        "ARCCOS": [
+            {
+                "mode": "VECTORING",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "INPUT_Y",
+                        "offset": 0.36451172962
+                    },
+                    "y": {
+                        "type": "INPUT_Y",
+                        "offset": -0.36451172962
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOS step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "CIRCULAR",
+                "init": {
+                    "x": {
+                        "type": "INPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "ARCCOS step 2/2"
+            }
+        ]
+    }
 }

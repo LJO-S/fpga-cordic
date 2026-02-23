@@ -564,7 +564,7 @@ tb_postproc_checker_obj = postproc_checker()
 
 for cfg in config:
     test.add_config(
-        name=f"{cfg["NAME"]}",
+        name=f"{cfg['NAME']}",
         generics=dict(
             G_MODE_VECTORING=cfg["G_MODE_VECTORING"],
             G_SUBMODE_HYPERBOLIC=cfg["G_SUBMODE_HYPERBOLIC"],
@@ -653,6 +653,7 @@ case_dict = [
         quadrant_en="1",
     ),
 ]
+
 # TODO add specials
 
 tb_postproc_checker_obj = postproc_checker()
@@ -662,13 +663,14 @@ for override in case_dict:
     cfg = {**default_dict, **override}
 
     test.add_config(
-        name=f"{cfg["name"]}",
+        name=f'{cfg["name"]}',
         generics=dict(encoded_tb_cfg=encode(cfg)),
         pre_config=tb_postproc_checker_obj.pre_config_wrapper(
             a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=1000, a_cfg=cfg
         ),
         post_check=tb_postproc_checker_obj.post_check_wrapper(a_cfg=cfg),
     )
+
 # And another testbench etc.
 # ============================================================
 

@@ -460,7 +460,6 @@ steps = [
         a_mode=Mode.VECTORING,
         a_submode=Submode.LINEAR,
         a_init={"x": (Init.OUTPUT_X,), "y": (Init.OUTPUT_Y,), "z": (Init.CONST, 0.0)},
-        # a_iter_start=-2,
         a_normalization=DataNormalization(norm_enable=True, norm_inputs=("x", "y")),
         a_comment="COT step 2/3",
     ),
@@ -507,7 +506,7 @@ steps = [
             "y": (Init.CONST, 0.0),
             "z": (Init.INPUT_Z,),
         },
-        a_comment="SECH step 1/2",
+        a_comment="CSCH step 1/2",
     ),
     create_step(
         a_mode=Mode.VECTORING,
