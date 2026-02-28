@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from cordic_core import (
+from .cordic_core import (
     Mode,
     Submode,
     Init,
@@ -54,6 +54,7 @@ steps = [
         a_mode=Mode.VECTORING,
         a_submode=Submode.CIRCULAR,
         a_init={"x": (Init.INPUT_X,), "y": (Init.INPUT_Y,), "z": (Init.CONST, 0.0)},
+        a_normalization=DataNormalization(norm_enable=True, norm_inputs=("x", "y")),
         a_comment="Arctan step 1/1",
     ),
 ]

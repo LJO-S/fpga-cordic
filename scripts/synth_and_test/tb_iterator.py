@@ -58,6 +58,13 @@ class tb_iterator:
             # 2. Read json and fetch tpyes
             json_obj = read_json(a_json_filepath)
 
+            # Fetch m/sm
+            mode = json_obj["functions"][a_type][0]["mode"]
+            submode = json_obj["functions"][a_type][0]["submode"]
+
+            mode_translator = dict(ROTATIONAL=0, VECTORING=1)
+            submode_translator = dict(LINEAR=0, CIRCULAR=1, HYPERBOLIC=2)
+
             # 3. Dump to text
             input_path: Path = Path(output_path) / "input_data.txt"
             input_path.parent.mkdir(exist_ok=True, parents=True)
@@ -79,9 +86,13 @@ class tb_iterator:
                     x_bstring = _format_as_bstring(x_fixed)
                     y_bstring = _format_as_bstring(y_fixed)
                     z_bstring = _format_as_bstring(z_fixed)
+                    mode_bstring = _format_as_bstring(mode_translator[mode])
+                    submode_bstring = _format_as_bstring(submode_translator[submode])
 
                     # 4. Write columns: X  Y  Z
-                    f.write(f"{x_bstring}\t{y_bstring}\t{z_bstring}\n")
+                    f.write(
+                        f"{x_bstring}\t{y_bstring}\t{z_bstring}\t{mode_bstring}\t{submode_bstring}\n"
+                    )
 
             return True
 
@@ -121,7 +132,7 @@ class tb_iterator:
 
                     # 1. Read input/output data
                     input_line = f_in.readline()
-                    [x_in, y_in, z_in] = input_line.split()
+                    [x_in, y_in, z_in, mode_idx, submode_idx] = input_line.split()
                     output_line = line
                     [x_out, y_out, z_out] = output_line.split()
 
@@ -151,9 +162,9 @@ class tb_iterator:
                     print("y_ref", y_ref)
                     print("z_ref=", z_ref)
                     print()
-                    x_comp = _compare_value(actual=x_out_f, reference=x_ref)
-                    y_comp = _compare_value(actual=y_out_f, reference=y_ref)
-                    z_comp = _compare_value(actual=z_out_f, reference=z_ref)
+                    x_comp = compare_value(actual=x_out_f, reference=x_ref)
+                    y_comp = compare_value(actual=y_out_f, reference=y_ref)
+                    z_comp = compare_value(actual=z_out_f, reference=z_ref)
                     print("=====================================================")
 
                     checker = checker and x_comp and y_comp and z_comp

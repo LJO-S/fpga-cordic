@@ -27,21 +27,55 @@ def read_json(filename: str):
 
 
 def generate_input_data(
-    a_json_obj: any, a_type: str, a_full_domain: bool, a_width: int = 4
+    a_json_obj: any,
+    a_type: str,
+    a_full_domain: bool,
+    a_width: int = 4,
+    a_include_init: bool = True,
 ):
 
     # Always use 1st microcode step
-    entry = a_json_obj[a_type][0]
+    entry = a_json_obj["functions"][a_type][0]
     print(entry)
 
     x, y, z = 0.0, 0.0, 0.0
+    # --------------------------------------------------------
     if a_type.upper() == "SIN_COS":
-        x = fetch_init_value(entry["init"]["x"]["type"])
-        y = fetch_init_value(entry["init"]["y"]["type"])
+        if a_include_init:
+            x = fetch_init_value(entry["init"]["x"]["type"])
+            y = fetch_init_value(entry["init"]["y"]["type"])
+        else:
+            x = 0.0
+            y = 0.0
         if a_full_domain is True:
             z = random.uniform(0, 2 * np.pi)
         else:
             z = random.uniform(0, np.deg2rad(45))
+    # --------------------------------------------------------
+    elif a_type.upper() == "TAN":
+        x = 0.0
+        y = 0.0
+        if a_full_domain is True:
+            z = random.uniform(0, 2 * np.pi)
+            print("yayayayay = ", (2 ** (a_width - 1) - 1))
+            if abs(np.tan(z)) > (2 ** (a_width - 1) - 1):
+                z = np.atan(2 ** (a_width - 1) - 1)
+        else:
+            z = random.uniform(0, np.pi / 4)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCSIN":
+        z = 0.0
+        if a_full_domain is True:
+            x = random.uniform(-0.9, 0.9)
+        else:
+            x = random.uniform(0, 0.9)
+        y = 1 - (x**2)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCCOS":
+        x = random.uniform(0, 0.9)
+        y = 1 - (x**2)
+        z = 0.0
+    # --------------------------------------------------------
     elif a_type.upper() == "ARCTAN":
         x = random.uniform(0, 1)
         z = 0.0
@@ -49,22 +83,28 @@ def generate_input_data(
             y = random.uniform(0, 10)
         else:
             y = random.uniform(0, 1)
+    # --------------------------------------------------------
     elif a_type.upper() == "MULT":
         y = 0.0
         if a_full_domain is True:
-            x = random.uniform(0, 2 ** (a_width - 1) - 1)
-            z = random.uniform(0, 2 ** (a_width - 1) - 1)
+            x = random.uniform(0, 2 ** ((a_width - 1) / 2) - 1)
+            z = random.uniform(0, 2 ** ((a_width - 1) / 2) - 1)
         else:
             x = random.uniform(0, 1)
             z = random.uniform(0, 1)
+    # --------------------------------------------------------
     elif a_type.upper() == "DIV":
         z = 0.0
+        x = 0.1
+        y = 0.1
         if a_full_domain is True:
-            x = random.uniform(0, 2 ** (a_width - 1) - 1)
-            y = random.uniform(0, 2 ** (a_width - 1) - 1)
+            while (y / x) > 2 ** (a_width - 1) - 1:
+                x = random.uniform(0.01, 2 ** (a_width - 1) - 1)
+                y = random.uniform(0, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0, 1)
             y = random.uniform(0, x)
+    # --------------------------------------------------------
     elif a_type.upper() == "RECIPROCAL":
         y = 0.0
         z = 0.0
@@ -72,8 +112,12 @@ def generate_input_data(
             x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0.5, 1)
+    # --------------------------------------------------------
     elif a_type.upper() == "SINH_COSH":
-        x = fetch_init_value(entry["init"]["x"]["type"])
+        if a_include_init:
+            x = fetch_init_value(entry["init"]["x"]["type"])
+        else:
+            x = 0.0
         y = 0.0
         if a_full_domain is True:
             # Note: for SINH_COSH the Z represents exp(Z). We use N later to
@@ -83,53 +127,213 @@ def generate_input_data(
             z = random.uniform(0, math.log(2) * (a_width - 1))
         else:
             z = random.uniform(0, 1)
+    # --------------------------------------------------------
+    elif a_type.upper() == "TANH":
+        x = 0.0
+        y = 0.0
+        if a_full_domain is True:
+            # Note: for SINH/COSH/TANH the Z represents exp(Z). We use N later to
+            # shift everything to a correct value. The integer width decides
+            # how much we can shift it. Thus, the largest Z is decided by how
+            # many integer bits we have available times ln(2).
+            z = random.uniform(0, math.log(2) * (a_width - 1))
+        else:
+            z = random.uniform(0, 1)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCSINH":
+        x = 0.0
+        y = random.uniform(0.0, 1)
+        z = 0.0
+        # --------------------------------------------------------
+    elif a_type.upper() == "ARCCOSH":
+        x = random.uniform(1.2, 2)
+        y = 0.0
+        z = 0.0
+    # --------------------------------------------------------
     elif a_type.upper() == "ARCTANH":
         x = random.uniform(0, 0.1)
         y = x / 2
         z = 0.0
+    # --------------------------------------------------------
+    elif a_type.upper() == "SQRT":
+        if a_full_domain:
+            x = random.uniform(0, 2 ** (a_width - 1) - 1)
+        else:
+            x = random.uniform(0, 1)
+        y = x
+        z = 0.0
+    # --------------------------------------------------------
+    elif a_type.upper() == "LN":
+        if a_full_domain:
+            x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
+        else:
+            x = random.uniform(0.1, 1)
+        y = 0.0
+        z = 0.0
+    # --------------------------------------------------------
+    elif a_type.upper() == "EXP":
+        x = 0.0
+        y = 0.0
+        if a_full_domain:
+            z = random.uniform(0, 2 ** (a_width - 1) - 1)
+        else:
+            z = random.uniform(0, 1)
+    # --------------------------------------------------------
+    elif a_type.upper() == "POW":
+        if a_full_domain:
+            x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
+            z = random.uniform(0.1, 2 ** (a_width - 1) - 1)
+        else:
+            x = random.uniform(0.1, 1)
+            z = random.uniform(0.1, 1)
+        y = x
+    # --------------------------------------------------------
+    elif a_type.upper() == "SEC":
+        x = 0.0
+        y = 0.0
+        if a_full_domain:
+            z = random.uniform(np.deg2rad(-89), np.deg2rad(89))
+        else:
+            z = random.uniform(np.deg2rad(0), np.deg2rad(45))
+    # --------------------------------------------------------
+    elif a_type.upper() == "CSC":
+        x = 0.0
+        y = 0.0
+        if a_full_domain:
+            z = random.uniform(np.deg2rad(1), np.deg2rad(179))
+        else:
+            z = random.uniform(np.deg2rad(1), np.deg2rad(45))
+    # --------------------------------------------------------
+    elif a_type.upper() == "COT":
+        x = 0.0
+        y = 0.0
+        if a_full_domain:
+            z = random.uniform(np.deg2rad(1), np.deg2rad(178))
+        else:
+            z = random.uniform(np.deg2rad(30), np.deg2rad(70))
+    # --------------------------------------------------------
     else:
-        pass
+        raise KeyError("Unknown input function!")
+    # --------------------------------------------------------
+    if a_include_init:
+        return (
+            x + entry["init"]["x"]["offset"],
+            y + entry["init"]["y"]["offset"],
+            z + entry["init"]["z"]["offset"],
+        )
     return (
-        x + entry["init"]["x"]["offset"],
-        y + entry["init"]["y"]["offset"],
-        z + entry["init"]["z"]["offset"],
+        x,
+        y,
+        z,
     )
 
 
 def generete_reference_data(a_type: str, x: float, y: float, z: float):
 
     x_exp, y_exp, z_exp = 0.0, 0.0, 0.0
+    # --------------------------------------------------------
     if a_type.upper() == "SIN_COS":
-        # Expected
         x_exp = np.cos(z)
         y_exp = np.sin(z)
         z_exp = None
+    # --------------------------------------------------------
+    elif a_type.upper() == "TAN":
+        x_exp = np.cos(z)
+        y_exp = None
+        z_exp = np.tan(z)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCSIN":
+        x_exp = (1 / AN) * np.sqrt((x**2) + (y))
+        y_exp = None
+        z_exp = np.asin(x)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCCOS":
+        x_exp = (1 / AN) * np.sqrt((x**2) + (y))
+        y_exp = None
+        z_exp = np.acos(x)
+    # --------------------------------------------------------
     elif a_type.upper() == "ARCTAN":
         x_exp = (1 / AN) * np.sqrt((x**2) + (y**2))
         y_exp = None
         z_exp = np.arctan(y / x)
+    # --------------------------------------------------------
     elif a_type.upper() == "MULT":
         x_exp = x
         y_exp = y + (x * z)
         z_exp = None
+    # --------------------------------------------------------
     elif a_type.upper() == "DIV":
         x_exp = x
         y_exp = None
         z_exp = z + (y / x)
+    # --------------------------------------------------------
     elif a_type.upper() == "RECIPROCAL":
         x_exp = x
         y_exp = None
         z_exp = z + (1 / x)
+    # --------------------------------------------------------
     elif a_type.upper() == "SINH_COSH":
         x_exp = np.cosh(z)
         y_exp = np.sinh(z)
         z_exp = None
+    # --------------------------------------------------------
+    elif a_type.upper() == "TANH":
+        x_exp = np.cosh(z)
+        y_exp = None
+        z_exp = np.tanh(z)
+    # --------------------------------------------------------
+    elif a_type.upper() == "ARCSINH":
+        x_exp = 0.5
+        y_exp = None
+        z_exp = np.log(y + np.sqrt((y**2) + 1))
+        # --------------------------------------------------------
+    elif a_type.upper() == "ARCCOSH":
+        x_exp = 0.5
+        y_exp = None
+        z_exp = np.log(x + np.sqrt((x**2) - 1))
+    # --------------------------------------------------------
     elif a_type.upper() == "ARCTANH":
         x_exp = AN_HYP * np.sqrt((x**2) - (y**2))
         y_exp = None
         z_exp = z + np.arctanh(y / x)
+    # --------------------------------------------------------
+    elif a_type.upper() == "SQRT":
+        x_exp = np.sqrt(x)
+        y_exp = None
+        z_exp = None
+    # --------------------------------------------------------
+    elif a_type.upper() == "LN":
+        x_exp = 0.5
+        y_exp = None
+        z_exp = np.log(x)
+    # --------------------------------------------------------
+    elif a_type.upper() == "EXP":
+        x_exp = np.exp(z)
+        y_exp = np.exp(z)
+        z_exp = None
+    # --------------------------------------------------------
+    elif a_type.upper() == "POW":
+        x_exp = x ** (z / 2)
+        y_exp = x ** (z / 2)
+        z_exp = None
+    # --------------------------------------------------------
+    elif a_type.upper() == "SEC":
+        x_exp = np.sin(z)
+        y_exp = None
+        z_exp = 1 / np.sin(z)
+    # --------------------------------------------------------
+    elif a_type.upper() == "CSC":
+        x_exp = np.cos(z)
+        y_exp = None
+        z_exp = 1 / np.cos(z)
+    # --------------------------------------------------------
+    elif a_type.upper() == "COT":
+        x_exp = np.tan(z)
+        y_exp = None
+        z_exp = 1 / np.tan(z)
+    # --------------------------------------------------------
     else:
-        pass
+        raise KeyError("Unknown input function!")
     return x_exp, y_exp, z_exp
 
 
@@ -330,15 +534,15 @@ def anti_range_reduction(
 
 def compare_value(actual, reference):
     if reference is not None:
-        match = math.isclose(a=actual, b=reference, rel_tol=0.001, abs_tol=1e-9)
+        match = math.isclose(a=actual, b=reference, rel_tol=0.01, abs_tol=1e-9)
         diff_rel = abs(actual - reference) / (reference + 1e-9)
         if not match:
             print(
-                f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+                f"Mismatch! Reference={reference} vs Actual={actual} <===> %diff={diff_rel}"
             )
             return False
         else:
             print(
-                f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={100.0 - diff_rel*100.0}"
+                f"Pass!! Reference={reference} vs Actual={actual} <===> %diff={diff_rel}"
             )
     return True

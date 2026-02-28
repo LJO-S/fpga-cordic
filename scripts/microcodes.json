@@ -123,6 +123,13 @@
                         "offset": 0.0
                     }
                 },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "y": true
+                    }
+                },
                 "comment": "Arctan step 1/1 (Note: functions as 'REC2POL')"
             }
         ],
@@ -317,7 +324,7 @@
                         "offset": 0.36451172962
                     },
                     "y": {
-                        "type": "INPUT_Y",
+                        "type": "INPUT_X",
                         "offset": -0.36451172962
                     },
                     "z": {

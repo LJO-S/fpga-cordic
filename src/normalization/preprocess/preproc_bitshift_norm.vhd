@@ -173,11 +173,15 @@ begin
             r_shift_z_d0 <= r_shift_z;
             -- Double shift
             if (r_shift_double_d0 = '1') then
+                -- X
+                r_shift_x_d0 <= r_shift_x + 2;
                 if (r_shift_x(r_shift_x'low) = '1') then
-                    r_shift_x_d0 <= r_shift_x - 1;
+                    r_shift_x_d0 <= r_shift_x + 1;
                 end if;
+                -- Y
+                r_shift_y_d0 <= r_shift_y + 2;
                 if (r_shift_y(r_shift_y'low) = '1') then
-                    r_shift_y_d0 <= r_shift_y - 1;
+                    r_shift_y_d0 <= r_shift_y + 1;
                 end if;
             end if;
             r_x_d1     <= r_x_d0;

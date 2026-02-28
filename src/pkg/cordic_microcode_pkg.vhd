@@ -14,22 +14,24 @@ package cordic_microcode_pkg is
     -- Constant Pool
     -----------------------
     constant C_CONSTANT_POOL_SIZE : natural := 6;
-    type t_offset_pool is array (0 to C_CONSTANT_POOL_SIZE - 1) of signed(28 downto 0);
+    type t_offset_pool is array (0 to C_CONSTANT_POOL_SIZE - 1) of signed(26 downto 0);
 
     constant C_OFFSET_POOL : t_offset_pool := (
-        0 => "00000000000000000000000000000", -- 0.0
-        1 => "01000000000000000000000000000", -- 1.0
-        2 => "00010111010101000010100100000", -- 0.36451172962
-        3 => "11101000101010111101011100000", -- -0.36451172962
-        4 => "11000000000000000000000000000", -- -1.0
-        5 => "00100000000000000000000000000", -- 0.5
+        0 => "000000000000000000000000000", -- 0.0
+        1 => "010000000000000000000000000", -- 1.0
+        2 => "000101110101010000101001000", -- 0.36451172962
+        3 => "111010001010101111010111000", -- -0.36451172962
+        4 => "110000000000000000000000000", -- -1.0
+        5 => "001000000000000000000000000", -- 0.5
         others => (others => '0')
     );
 
     -----------------------
     -- Function PTR table
     -----------------------
-    type t_function_array is array (0 to 22) of unsigned(5 downto 0);
+    constant C_NBR_OF_FUNCTIONS : natural := 23;
+
+    type t_function_array is array (0 to C_NBR_OF_FUNCTIONS - 1) of unsigned(5 downto 0);
 
     constant C_FUNCTION_ARRAY : t_function_array := (
         0 => to_unsigned(0, 6), -- SIN_COS
@@ -193,10 +195,10 @@ package cordic_microcode_pkg is
             ),
             norm => (
                 -- Bitshift Norm
-                norm_en    => '0',
+                norm_en    => '1',
                 norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
+                    0 => '1', -- X
+                    1 => '1', -- Y
                     2 => '0'  -- Z
                 ),
                 norm_shift_double   => '0',
@@ -479,7 +481,7 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => INPUT_Y, 
+                    source   => INPUT_X, 
                     const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (

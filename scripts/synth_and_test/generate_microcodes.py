@@ -3,6 +3,7 @@ import json
 from jinja2 import Environment, FileSystemLoader
 from copy import deepcopy
 import math
+import os
 
 # Generate:
 # 1. MICROCODE STEP ROM
@@ -25,11 +26,22 @@ def deep_merge(a_base, a_update):
     return base
 
 
+def get_functions(a_json_path: Path):
+    # 1. Parse JSON
+    with Path(a_json_path).open("r", encoding="utf-8") as fptr:
+        json_obj = json.loads(fptr.read())
+    functions = []
+    for func_name, _ in json_obj["functions"].items():
+        functions.append(func_name)
+    return functions
+
+
 def generate_microcode_rom(
     a_json_path: Path,
-    a_output_path: Path,
-    a_data_width_norm: int,
-    a_data_width_frac: int,
+    a_input_path: Path = Path("./jinja_templates"),
+    a_output_path: Path = Path("../../src/pkg/cordic_microcode_pkg.vhd"),
+    a_data_width_norm: int = 27,
+    a_data_width_frac: int = 25,
 ):
     def to_fixed_binary(a_val: float):
         """
@@ -70,7 +82,6 @@ def generate_microcode_rom(
     compiled_steps = []
     function_table = []
 
-    i = 0
     for func_name, steps in json_obj["functions"].items():
         # Set PTR
         function_table.append(dict(name=func_name, start_addr=len(compiled_steps)))
@@ -90,7 +101,7 @@ def generate_microcode_rom(
     # 3. Generate VHDL from Jinja2 template
 
     # Setup Jinja2 environ
-    env = Environment(loader=FileSystemLoader("./jinja_templates"))
+    env = Environment(loader=FileSystemLoader(a_input_path))
     env.filters["to_fixed_binary"] = to_fixed_binary
     env.filters["log2"] = to_int_log2
     template = env.get_template("cordic_microcode_pkg.vhd.j2")
@@ -120,4 +131,4 @@ if __name__ == "__main__":
         a_data_width_norm=G_DATA_WIDTH_NORM,
         a_data_width_frac=G_DATA_WIDTH_FRAC,
     )
-    print("Hello world!")
+    print("Generated microcodes successfully!")

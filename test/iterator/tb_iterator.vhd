@@ -34,17 +34,18 @@ architecture bench of iterator_tb is
     -- Generics
     constant G_DATA_WIDTH      : natural := G_WIDTH;
     constant G_DATA_FRAC_WIDTH : natural := G_FRAC;
-    -- constant G_NBR_OF_ITERATIONS   : natural := C_NBR_OF_ITERATIONS;
+
+    -- NOTE: the JSON-VHDL pkg is very sensitive to large JSON files
     -- JSON Reads
-    constant C_JSON_CONTENT : T_JSON := jsonLoad(G_FILEPATH_JSON);
-    constant C_MODE         : string := jsonGetString(
-    C_JSON_CONTENT,
-    G_TYPE & "/0/mode"
-    );
-    constant C_SUBMODE : string := jsonGetString(
-    C_JSON_CONTENT,
-    G_TYPE & "/0/submode"
-    );
+    -- constant C_JSON_CONTENT : T_JSON := jsonLoad(G_FILEPATH_JSON);
+    -- constant C_MODE         : string := jsonGetString(
+    -- C_JSON_CONTENT,
+    -- G_TYPE & "/0/mode"
+    -- );
+    -- constant C_SUBMODE : string := jsonGetString(
+    -- C_JSON_CONTENT,
+    -- G_TYPE & "/0/submode"
+    -- );
 
     -- Ports
     signal clk           : std_logic := '0';
@@ -70,6 +71,8 @@ architecture bench of iterator_tb is
     signal auto_data_x            : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
     signal auto_data_y            : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
     signal auto_data_z            : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+    signal auto_mode_idx          : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+    signal auto_submode_idx       : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
     signal auto_data_tvalid       : std_logic;
     signal manual_data_x          : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
     signal manual_data_y          : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
@@ -111,11 +114,13 @@ begin
     -- ===================================================================
     -- Read input file
     p_read_input_file : process
-        file v_read_file  : text open read_mode is output_path(runner_cfg) & "/" & "input_data.txt";
-        variable v_line   : line;
-        variable v_data_x : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        variable v_data_y : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
-        variable v_data_z : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        file v_read_file       : text open read_mode is output_path(runner_cfg) & "/" & "input_data.txt";
+        variable v_line        : line;
+        variable v_data_x      : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        variable v_data_y      : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        variable v_data_z      : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        variable v_mode_idx    : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
+        variable v_submode_idx : std_logic_vector(G_DATA_WIDTH - 1 downto 0);
     begin
         tb_auto_done <= false;
         while not endfile(v_read_file) loop
@@ -123,9 +128,13 @@ begin
             BINARY_READ(v_line, v_data_x);
             BINARY_READ(v_line, v_data_y);
             BINARY_READ(v_line, v_data_z);
+            BINARY_READ(v_line, v_mode_idx);
+            BINARY_READ(v_line, v_submode_idx);
             auto_data_x      <= v_data_x;
             auto_data_y      <= v_data_y;
             auto_data_z      <= v_data_z;
+            auto_mode_idx    <= v_mode_idx;
+            auto_submode_idx <= v_submode_idx;
             auto_data_tvalid <= '1';
             wait_clock(1);
             auto_data_x      <= (others => '0');
@@ -156,20 +165,15 @@ begin
         end if;
     end process p_write_output_file;
     -- ===================================================================
-    process (all)
-    begin
-        if (tb_auto_set = true) then
-            i_data_x      <= auto_data_x;
-            i_data_y      <= auto_data_y;
-            i_data_z      <= auto_data_z;
-            i_data_tvalid <= auto_data_tvalid;
-        else -- MANUAL
-            i_data_x      <= manual_data_x;
-            i_data_y      <= manual_data_y;
-            i_data_z      <= manual_data_z;
-            i_data_tvalid <= manual_data_tvalid;
-        end if;
-    end process;
+    i_data_x      <= auto_data_x;
+    i_data_y      <= auto_data_y;
+    i_data_z      <= auto_data_z;
+    i_data_tvalid <= auto_data_tvalid;
+
+    i_mode    <= ROTATIONAL when (unsigned(auto_mode_idx) = 0) else VECTORING;
+    i_submode <= LINEAR when (unsigned(auto_submode_idx) = 0) else
+                CIRCULAR when (unsigned(auto_submode_idx) = 1) else
+                HYPERBOLIC;
     -- ===================================================================
     main : process
         -------------------------------------------------
@@ -209,8 +213,8 @@ begin
         test_runner_setup(runner, runner_cfg);
         if run("auto") then
             tb_auto_set <= true;
-            i_mode      <= f_json_mode(C_MODE);
-            i_submode   <= f_json_submode(C_SUBMODE);
+            -- i_mode      <= f_json_mode(C_MODE);
+            -- i_submode   <= f_json_submode(C_SUBMODE);
             wait until tb_auto_done = true;
         end if;
         test_runner_cleanup(runner);

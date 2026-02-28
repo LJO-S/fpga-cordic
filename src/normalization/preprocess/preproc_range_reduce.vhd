@@ -40,7 +40,7 @@ architecture rtl of preproc_range_reduce is
     constant C_LN2_INV_REAL   : real                                   := 1.0 / C_LN2_REAL;
     constant C_LN2_SIGNED     : signed(G_DATA_WIDTH_NORM - 1 downto 0) := to_signed(integer(C_LN2_REAL * (2.0 ** (G_DATA_WIDTH_FRAC))), G_DATA_WIDTH_NORM);
     constant C_LN2_INV_SIGNED : signed(G_DATA_WIDTH_NORM - 1 downto 0) := to_signed(integer(C_LN2_INV_REAL * (2.0 ** (G_DATA_WIDTH_FRAC))), G_DATA_WIDTH_NORM);
-    constant C_ROUND_ADD      : signed(G_DATA_WIDTH_FRAC - 1 downto 0) := to_signed(2 ** (G_DATA_WIDTH_FRAC - 1), G_DATA_WIDTH_FRAC);
+    constant C_ROUND_ADD      : signed(G_DATA_WIDTH_NORM - 1 downto 0) := to_signed(2 ** (G_DATA_WIDTH_FRAC - 1), G_DATA_WIDTH_NORM);
     ----------------
     -- Types
     ----------------

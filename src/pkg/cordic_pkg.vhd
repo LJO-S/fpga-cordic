@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
-
+-- 
 package cordic_pkg is
     -- ---------------
     -- Constants
@@ -14,10 +14,6 @@ package cordic_pkg is
     constant C_VECTORING  : std_logic                    := '1';
     constant C_ROTATIONAL : std_logic                    := '0';
     -- Parameters
-    constant C_DATA_WIDTH        : natural := 32;
-    constant C_FRAC_WIDTH        : natural := 30;
-    constant C_NBR_OF_ITERATIONS : natural := 40;
-    constant C_NBR_OF_FUNCTIONS  : natural := 20;
     -- ---------------
     -- Types
     -- ---------------
@@ -37,14 +33,6 @@ package cordic_pkg is
         quadrant_en : std_logic;
     end record;
 
-    type t_normalization_meta is record
-        shift_x  : integer;
-        shift_y  : integer;
-        shift_z  : integer;
-        quadrant : unsigned(1 downto 0);
-        range_n  : integer;
-    end record;
-
     type t_initialization_type is (
         PROC_GAIN,
         PROC_GAIN_INV,
@@ -59,9 +47,10 @@ package cordic_pkg is
         OUTPUT_Z
     );
 
+    constant C_NBR_OF_FUNCTIONS_hotfix : natural := 23;
     type t_initialization is record
         source   : t_initialization_type;
-        const_id : unsigned(integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))) - 1 downto 0);
+        const_id : unsigned(integer(ceil(log2(real(C_NBR_OF_FUNCTIONS_hotfix)))) - 1 downto 0);
     end record;
 
     type t_initialization_array is array (0 to 2) of t_initialization;

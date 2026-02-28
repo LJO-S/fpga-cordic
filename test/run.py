@@ -13,6 +13,8 @@ from scripts.synth_and_test.generate_angles import generate_angle
 from scripts.synth_and_test.tb_iterator import tb_iterator
 from scripts.synth_and_test.tb_preproc import *
 from scripts.synth_and_test.tb_postproc import *
+from scripts.synth_and_test.tb_cordic import *
+from scripts.synth_and_test.generate_microcodes import get_functions
 
 
 # ============================================================
@@ -65,14 +67,6 @@ lib = VU.add_library("lib")
 # ============================================================
 # Add sources
 for src_file in src_dir.rglob("*.vhd"):
-    if "cordic.vhd" in str(src_file):
-        continue
-    if "microcode_rom.vhd" in str(src_file):
-        continue
-    if "microcode_rom_wrapper.vhd" in str(src_file):
-        continue
-    if "cordic_core.vhd" in str(src_file):
-        continue
     lib.add_source_file(src_file)
 
 # ============================================================
@@ -594,7 +588,6 @@ for cfg in config:
 # --------------------
 testbench = lib.entity("cordic_postprocess_tb")
 test = testbench.test("auto")
-tb_postproc_checker_obj = postproc_checker()
 
 G_DATA_WIDTH_DENORM = 32
 G_DATA_WIDTH_NORM = 25
@@ -653,9 +646,6 @@ case_dict = [
         quadrant_en="1",
     ),
 ]
-
-# TODO add specials
-
 tb_postproc_checker_obj = postproc_checker()
 
 for override in case_dict:
@@ -669,6 +659,56 @@ for override in case_dict:
             a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=1000, a_cfg=cfg
         ),
         post_check=tb_postproc_checker_obj.post_check_wrapper(a_cfg=cfg),
+    )
+
+# --------------------
+# CORDIC Top
+# --------------------
+testbench = lib.entity("cordic_tb")
+test = testbench.test("auto")
+
+tb_cordic_checker_obj = cordic_checker()
+
+G_DATA_WIDTH = 31
+G_DATA_WIDTH_FRAC = 25
+G_NBR_OF_ITERATIONS = 40
+functions = get_functions(str(G_FILEPATH_JSON))
+
+generate_microcode_rom(
+    a_json_path=G_FILEPATH_JSON,
+    a_input_path=Path("../scripts/synth_and_test/jinja_templates"),
+    a_output_path=Path("../src/pkg/cordic_microcode_pkg.vhd"),
+    a_data_width_norm=G_DATA_WIDTH_FRAC + 2,
+    a_data_width_frac=G_DATA_WIDTH_FRAC,
+)
+lib.add_source_file("../src/pkg/cordic_microcode_pkg.vhd")
+
+
+config = []
+for idx, func_name in enumerate(functions):
+    config.append(
+        dict(
+            name=func_name,
+            config_idx=idx,
+            G_DATA_WIDTH=G_DATA_WIDTH,
+            G_DATA_WIDTH_FRAC=G_DATA_WIDTH_FRAC,
+            G_NBR_OF_ITERATIONS=G_NBR_OF_ITERATIONS,
+        )
+    )
+
+for cfg in config:
+    test.add_config(
+        name=f'{cfg["name"]}',
+        generics=dict(
+            G_CONFIG_IDX=cfg["config_idx"],
+            G_DATA_WIDTH=cfg["G_DATA_WIDTH"],
+            G_DATA_WIDTH_FRAC=cfg["G_DATA_WIDTH_FRAC"],
+            G_NBR_OF_ITERATIONS=cfg["G_NBR_OF_ITERATIONS"],
+        ),
+        pre_config=tb_cordic_checker_obj.pre_config_wrapper(
+            a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=10, a_cfg=cfg
+        ),
+        post_check=tb_cordic_checker_obj.post_check_wrapper(a_cfg=cfg),
     )
 
 # And another testbench etc.
