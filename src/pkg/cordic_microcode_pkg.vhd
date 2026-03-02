@@ -13,23 +13,22 @@ package cordic_microcode_pkg is
     -----------------------
     -- Constant Pool
     -----------------------
-    constant C_CONSTANT_POOL_SIZE : natural := 6;
-    type t_offset_pool is array (0 to C_CONSTANT_POOL_SIZE - 1) of signed(26 downto 0);
+    constant C_CONSTANT_POOL_SIZE : natural := 5;
+    type t_offset_pool is array (0 to C_CONSTANT_POOL_SIZE - 1) of signed(27 downto 0);
 
     constant C_OFFSET_POOL : t_offset_pool := (
-        0 => "000000000000000000000000000", -- 0.0
-        1 => "010000000000000000000000000", -- 1.0
-        2 => "000101110101010000101001000", -- 0.36451172962
-        3 => "111010001010101111010111000", -- -0.36451172962
-        4 => "110000000000000000000000000", -- -1.0
-        5 => "001000000000000000000000000", -- 0.5
+        0 => "0000000000000000000000000000", -- 0.0
+        1 => "0000101110101010000101001000", -- 0.36451172962
+        2 => "1111010001010101111010111000", -- -0.36451172962
+        3 => "0010000000000000000000000000", -- 1.0
+        4 => "1110000000000000000000000000", -- -1.0
         others => (others => '0')
     );
 
     -----------------------
     -- Function PTR table
     -----------------------
-    constant C_NBR_OF_FUNCTIONS : natural := 23;
+    constant C_NBR_OF_FUNCTIONS : natural := 20;
 
     type t_function_array is array (0 to C_NBR_OF_FUNCTIONS - 1) of unsigned(5 downto 0);
 
@@ -52,17 +51,14 @@ package cordic_microcode_pkg is
         15 => to_unsigned(26, 6), -- CSC
         16 => to_unsigned(28, 6), -- SEC
         17 => to_unsigned(30, 6), -- COT
-        18 => to_unsigned(33, 6), -- SECH
-        19 => to_unsigned(35, 6), -- CSCH
-        20 => to_unsigned(37, 6), -- COTH
-        21 => to_unsigned(40, 6), -- ARCSIN
-        22 => to_unsigned(42, 6) -- ARCCOS
+        18 => to_unsigned(33, 6), -- ARCSIN
+        19 => to_unsigned(35, 6) -- ARCCOS
     );
 
     -----------------------
     -- Microcode ROM
     -----------------------
-    constant C_MICROCODE_ROM_SIZE : natural := 44;
+    constant C_MICROCODE_ROM_SIZE : natural := 37;
     constant C_MICROCODE_ROM : t_microcode_step_array(0 to C_MICROCODE_ROM_SIZE - 1) := (
         -- Sine & Cosine step 1/1 (Note: functions as 'POL2REC')
         0 => (
@@ -296,8 +292,8 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -478,11 +474,11 @@ package cordic_microcode_pkg is
             init    => (
                 0 => (
                     source   => INPUT_X, 
-                    const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => INPUT_X, 
-                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -515,10 +511,10 @@ package cordic_microcode_pkg is
             init    => (
                 0 => (
                     source   => INPUT_X, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => INPUT_Y, 
+                    source   => INPUT_X, 
                     const_id => to_unsigned(4, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
@@ -551,8 +547,8 @@ package cordic_microcode_pkg is
             submode => LINEAR,
             init    => (
                 0 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(5, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_HALF, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => OUTPUT_Z, 
@@ -582,7 +578,7 @@ package cordic_microcode_pkg is
             last => '1'
         ),
         
-        -- EXP step 1/1
+        -- EXP step 1/1. Range z=[0, ln(integer_width)]
         14 => (
             mode    => ROTATIONAL,
             submode => HYPERBOLIC,
@@ -619,17 +615,17 @@ package cordic_microcode_pkg is
             last => '1'
         ),
         
-        -- POW step 1/3
+        -- POW step 1/3. Output is Y = X ** (Z/2). Use common sense for large values
         15 => (
             mode    => VECTORING,
             submode => HYPERBOLIC,
             init    => (
                 0 => (
                     source   => INPUT_X, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => INPUT_Y, 
+                    source   => INPUT_X, 
                     const_id => to_unsigned(4, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
@@ -740,8 +736,8 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -811,7 +807,7 @@ package cordic_microcode_pkg is
             init    => (
                 0 => (
                     source   => OUTPUT_Z, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => OUTPUT_Z, 
@@ -824,16 +820,16 @@ package cordic_microcode_pkg is
             ),
             norm => (
                 -- Bitshift Norm
-                norm_en    => '0',
+                norm_en    => '1',
                 norm_input => (
-                    0 => '0', -- X
+                    0 => '1', -- X
                     1 => '0', -- Y
-                    2 => '0'  -- Z
+                    2 => '1'  -- Z
                 ),
                 norm_shift_double   => '0',
                 norm_shift_common   => '0',
                 -- Range Reduce
-                reduction_en          => '0',
+                reduction_en          => '1',
                 reduction_reconstruct => '0',
                 -- Quadrant Map
                 quadrant_en           => '0'
@@ -847,8 +843,8 @@ package cordic_microcode_pkg is
             submode => LINEAR,
             init    => (
                 0 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(5, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_HALF, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => OUTPUT_Z, 
@@ -884,8 +880,8 @@ package cordic_microcode_pkg is
             submode => CIRCULAR,
             init    => (
                 0 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => INPUT_Y, 
@@ -959,7 +955,7 @@ package cordic_microcode_pkg is
             init    => (
                 0 => (
                     source   => OUTPUT_Z, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => OUTPUT_Z, 
@@ -972,16 +968,16 @@ package cordic_microcode_pkg is
             ),
             norm => (
                 -- Bitshift Norm
-                norm_en    => '0',
+                norm_en    => '1',
                 norm_input => (
-                    0 => '0', -- X
+                    0 => '1', -- X
                     1 => '0', -- Y
-                    2 => '0'  -- Z
+                    2 => '1'  -- Z
                 ),
                 norm_shift_double   => '0',
                 norm_shift_common   => '0',
                 -- Range Reduce
-                reduction_en          => '0',
+                reduction_en          => '1',
                 reduction_reconstruct => '0',
                 -- Quadrant Map
                 quadrant_en           => '0'
@@ -995,8 +991,8 @@ package cordic_microcode_pkg is
             submode => LINEAR,
             init    => (
                 0 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(5, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_HALF, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => OUTPUT_Z, 
@@ -1073,8 +1069,8 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -1147,8 +1143,8 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -1258,8 +1254,8 @@ package cordic_microcode_pkg is
                     const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    source   => CONST_ONE, 
+                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -1285,277 +1281,18 @@ package cordic_microcode_pkg is
             last => '1'
         ),
         
-        -- SECH step 1/2
-        33 => (
-            mode    => ROTATIONAL,
-            submode => HYPERBOLIC,
-            init    => (
-                0 => (
-                    source   => PROC_GAIN_HYP_INV, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => INPUT_Z, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '0'
-        ),
-        
-        -- SECH step 2/2
-        34 => (
-            mode    => VECTORING,
-            submode => LINEAR,
-            init    => (
-                0 => (
-                    source   => OUTPUT_X, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '1'
-        ),
-        
-        -- CSCH step 1/2
-        35 => (
-            mode    => ROTATIONAL,
-            submode => HYPERBOLIC,
-            init    => (
-                0 => (
-                    source   => PROC_GAIN_HYP_INV, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => INPUT_Z, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '0'
-        ),
-        
-        -- CSCH step 2/2
-        36 => (
-            mode    => VECTORING,
-            submode => LINEAR,
-            init    => (
-                0 => (
-                    source   => OUTPUT_Y, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '1'
-        ),
-        
-        -- COTH step 1/3
-        37 => (
-            mode    => ROTATIONAL,
-            submode => HYPERBOLIC,
-            init    => (
-                0 => (
-                    source   => PROC_GAIN_HYP_INV, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => INPUT_Z, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '0'
-        ),
-        
-        -- COTH step 2/3
-        38 => (
-            mode    => VECTORING,
-            submode => LINEAR,
-            init    => (
-                0 => (
-                    source   => OUTPUT_X, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => OUTPUT_Y, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => OUTPUT_Z, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '0'
-        ),
-        
-        -- COTH step 3/3
-        39 => (
-            mode    => VECTORING,
-            submode => LINEAR,
-            init    => (
-                0 => (
-                    source   => OUTPUT_Z, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- Y
-                2 => (
-                    source   => CONST, 
-                    const_id => to_unsigned(0, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ) -- Z
-            ),
-            norm => (
-                -- Bitshift Norm
-                norm_en    => '0',
-                norm_input => (
-                    0 => '0', -- X
-                    1 => '0', -- Y
-                    2 => '0'  -- Z
-                ),
-                norm_shift_double   => '0',
-                norm_shift_common   => '0',
-                -- Range Reduce
-                reduction_en          => '0',
-                reduction_reconstruct => '0',
-                -- Quadrant Map
-                quadrant_en           => '0'
-            ),
-            last => '1'
-        ),
-        
         -- ARCSIN step 1/2
-        40 => (
+        33 => (
             mode    => VECTORING,
             submode => HYPERBOLIC,
             init    => (
                 0 => (
+                    source   => INPUT_Y, 
+                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    ), -- X
+                1 => (
                     source   => INPUT_Y, 
                     const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
-                    ), -- X
-                1 => (
-                    source   => INPUT_Y, 
-                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -1582,7 +1319,7 @@ package cordic_microcode_pkg is
         ),
         
         -- ARCSIN step 2/2
-        41 => (
+        34 => (
             mode    => VECTORING,
             submode => CIRCULAR,
             init    => (
@@ -1619,17 +1356,17 @@ package cordic_microcode_pkg is
         ),
         
         -- ARCCOS step 1/2
-        42 => (
+        35 => (
             mode    => VECTORING,
             submode => HYPERBOLIC,
             init    => (
                 0 => (
                     source   => INPUT_Y, 
-                    const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(1, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- X
                 1 => (
                     source   => INPUT_Y, 
-                    const_id => to_unsigned(3, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
+                    const_id => to_unsigned(2, integer(ceil(log2(real(C_NBR_OF_FUNCTIONS)))))
                     ), -- Y
                 2 => (
                     source   => CONST, 
@@ -1656,7 +1393,7 @@ package cordic_microcode_pkg is
         ),
         
         -- ARCCOS step 2/2
-        43 => (
+        36 => (
             mode    => VECTORING,
             submode => CIRCULAR,
             init    => (

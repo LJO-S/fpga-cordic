@@ -127,7 +127,6 @@ for TYPE in (
     "ARCTAN",
     "MULT",
     "DIV",
-    "RECIPROCAL",
     "SINH_COSH",
     "ARCTANH",
 ):
@@ -678,7 +677,7 @@ generate_microcode_rom(
     a_json_path=G_FILEPATH_JSON,
     a_input_path=Path("../scripts/synth_and_test/jinja_templates"),
     a_output_path=Path("../src/pkg/cordic_microcode_pkg.vhd"),
-    a_data_width_norm=G_DATA_WIDTH_FRAC + 2,
+    a_data_width_norm=G_DATA_WIDTH_FRAC + 3,
     a_data_width_frac=G_DATA_WIDTH_FRAC,
 )
 lib.add_source_file("../src/pkg/cordic_microcode_pkg.vhd")
@@ -706,7 +705,7 @@ for cfg in config:
             G_NBR_OF_ITERATIONS=cfg["G_NBR_OF_ITERATIONS"],
         ),
         pre_config=tb_cordic_checker_obj.pre_config_wrapper(
-            a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=10, a_cfg=cfg
+            a_json_filepath=str(G_FILEPATH_JSON), a_nbr_of_tests=1000, a_cfg=cfg
         ),
         post_check=tb_cordic_checker_obj.post_check_wrapper(a_cfg=cfg),
     )

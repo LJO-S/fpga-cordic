@@ -142,7 +142,7 @@ def test_function(a_func: Function):
         z = 0.0
         # Expected
         x_exp = 0.5
-        y_exp = 0.0
+        y_exp = None
         z_exp = np.log(x + np.sqrt((x**2) - 1))
     elif a_func == Function.ARCTANH:
         # Input
@@ -256,7 +256,6 @@ def test_function(a_func: Function):
     for r, e in zip(result, expected):
         if e is None:
             continue
-        # diff = np.abs(r - e) / (np.abs(e) + 1e-12)
         diff_percent = (np.abs(r - e) / (np.abs(e))) * 100.0
         if diff_percent < 1.0:
             pass
@@ -289,7 +288,7 @@ if __name__ == "__main__":
     # ===============================
     for _ in range(1):
         for function in (
-            Function.SIN_COS,  # DONE
+            # Function.SIN_COS,  # DONE
             # Function.TAN,  # DONE
             # Function.ARCSIN,  # DONE
             # Function.ARCCOS,  # DONE

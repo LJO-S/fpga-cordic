@@ -41,7 +41,7 @@ architecture rtl of iterator is
    -- Constants
    -- ---------------
    constant C_WIDTH_GROWTH : integer                           := integer(ceil(log2(real(G_NBR_OF_ITERATIONS))));
-   constant C_SIGNED_ONE   : signed(G_DATA_WIDTH - 1 downto 0) := (G_DATA_WIDTH - 2 => '1', others => '0'); -- hmm
+   constant C_SIGNED_ONE   : signed(G_DATA_WIDTH - 1 downto 0) := (G_DATA_FRAC_WIDTH => '1', others => '0'); -- hmm
 
    -- ---------------
    -- Types
@@ -195,8 +195,7 @@ begin
             r_sign <= r_iter_z(r_iter_z'high);
          else
             -- VECTORING
-            -- r_sign <= not(r_iter_y(r_iter_z'high) and r_iter_x(r_iter_x'high));
-            r_sign <= not(r_iter_y(r_iter_z'high));
+            r_sign <= not(r_iter_y(r_iter_y'high) xor r_iter_x(r_iter_x'high));
          end if;
       end if;
    end process p_sign;

@@ -55,7 +55,7 @@ class cordic_checker:
             gen_angles_obj.generate_circ_angles(
                 a_depth=a_cfg["G_NBR_OF_ITERATIONS"],
                 a_width=a_cfg["G_DATA_WIDTH_FRAC"]
-                + 2,  # Note: +2 to account for sign+uint bit
+                + 3,  # Note: +2 to account for sign+uint bit
                 a_frac=a_cfg["G_DATA_WIDTH_FRAC"],
                 a_output_path=Path(output_path)
                 / f"angle_circ_0_{a_cfg['G_NBR_OF_ITERATIONS'] - 1}.txt",
@@ -63,7 +63,7 @@ class cordic_checker:
             gen_angles_obj.generate_hyper_angles(
                 a_depth=a_cfg["G_NBR_OF_ITERATIONS"],
                 a_width=a_cfg["G_DATA_WIDTH_FRAC"]
-                + 2,  # Note: +2 to account for sign+uint bit
+                + 3,  # Note: +2 to account for sign+uint bit
                 a_frac=a_cfg["G_DATA_WIDTH_FRAC"],
                 a_output_path=Path(output_path)
                 / f"angle_hyper_0_{a_cfg['G_NBR_OF_ITERATIONS'] - 1}.txt",
@@ -165,19 +165,6 @@ class cordic_checker:
                     z_out_f = BitArray(bin=z_out).int / (
                         2.0 ** a_cfg["G_DATA_WIDTH_FRAC"]
                     )
-
-                    # 3. Generate reference data
-                    # (
-                    #     x_ref,
-                    #     y_ref,
-                    #     z_ref,
-                    # ) = execute_cordic(
-                    #     a_func=a_func_translator[a_cfg["name"]],
-                    #     a_x=x_in_f,
-                    #     a_y=y_in_f,
-                    #     a_z=z_in_f,
-                    #     a_nbr_of_iterations=a_cfg["G_NBR_OF_ITERATIONS"],
-                    # )
 
                     (
                         x_ref,

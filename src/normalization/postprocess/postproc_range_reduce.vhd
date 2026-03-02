@@ -116,7 +116,7 @@ begin
                     r_bitshift_x <= signed(i_bitshift_x);
                     r_range_n    <= signed(i_range_n);
                     -- Calculate reconstruction values
-                    r_vec_hyp_ln2   <= C_LN2_SIGNED * shift_right(signed(i_bitshift_x), 1);
+                    r_vec_hyp_ln2   <= C_LN2_SIGNED * signed(i_bitshift_x);
                     r_reduction_ln2 <= C_LN2_SIGNED * signed(i_range_n);
                     r_exp_pos_n     <= resize(signed(i_x), G_DATA_WIDTH_DENORM + 1) + resize(signed(i_y), G_DATA_WIDTH_DENORM + 1);
                     r_exp_neg_n     <= resize(signed(i_x), G_DATA_WIDTH_DENORM + 1) - resize(signed(i_y), G_DATA_WIDTH_DENORM + 1);
@@ -132,7 +132,7 @@ begin
                     end if;
                     ---------------------------------------------
                 when VEC_HYPER_RECONSTRUCT =>
-                    r_z            <= r_z + r_vec_hyp_ln2;
+                    r_z            <= r_z + shift_right(r_vec_hyp_ln2, 1);
                     r_valid        <= '1';
                     s_reduce_state <= IDLE;
                     ---------------------------------------------

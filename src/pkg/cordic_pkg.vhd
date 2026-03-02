@@ -38,7 +38,10 @@ package cordic_pkg is
         PROC_GAIN_INV,
         PROC_GAIN_HYP,
         PROC_GAIN_HYP_INV,
-        CONST,
+        CONST, -- TODO REMOVE
+        CONST_ONE,
+        CONST_HALF,
+        CONST_ZERO,
         INPUT_X,
         INPUT_Y,
         INPUT_Z,

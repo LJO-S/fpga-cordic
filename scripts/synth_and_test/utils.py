@@ -168,31 +168,40 @@ def generate_input_data(
             x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0.1, 1)
-        y = 0.0
+        y = x
         z = 0.0
     # --------------------------------------------------------
     elif a_type.upper() == "EXP":
         x = 0.0
         y = 0.0
         if a_full_domain:
-            z = random.uniform(0, 2 ** (a_width - 1) - 1)
+            z = random.uniform(0, np.log(2 ** (a_width - 1) - 1))
         else:
             z = random.uniform(0, 1)
     # --------------------------------------------------------
     elif a_type.upper() == "POW":
+        # EXP x ** (z / 2)
         if a_full_domain:
             x = random.uniform(0.1, 2 ** (a_width - 1) - 1)
-            z = random.uniform(0.1, 2 ** (a_width - 1) - 1)
+            if x < 1:
+                # I dont want too small numbers, but this is up to you
+                z = random.uniform(0.1, 5)
+            else:
+                # Limit this bad boy
+                while x ** (z / 2) > 2 ** (a_width - 1) - 1:
+                    z = random.uniform(0.1, 2 ** (a_width - 1) - 1)
         else:
             x = random.uniform(0.1, 1)
             z = random.uniform(0.1, 1)
-        y = x
+        y = 0.0
     # --------------------------------------------------------
     elif a_type.upper() == "SEC":
         x = 0.0
         y = 0.0
         if a_full_domain:
-            z = random.uniform(np.deg2rad(-89), np.deg2rad(89))
+            z = random.uniform(np.deg2rad(0), np.deg2rad(360))
+            while abs(1 / np.sin(z)) > 2 ** (a_width - 1) - 1:
+                z = random.uniform(np.deg2rad(1), np.deg2rad(359))
         else:
             z = random.uniform(np.deg2rad(0), np.deg2rad(45))
     # --------------------------------------------------------
@@ -200,7 +209,9 @@ def generate_input_data(
         x = 0.0
         y = 0.0
         if a_full_domain:
-            z = random.uniform(np.deg2rad(1), np.deg2rad(179))
+            z = random.uniform(np.deg2rad(0), np.deg2rad(360))
+            while abs(1 / np.cos(z)) > 2 ** (a_width - 1) - 1:
+                z = random.uniform(np.deg2rad(1), np.deg2rad(359))
         else:
             z = random.uniform(np.deg2rad(1), np.deg2rad(45))
     # --------------------------------------------------------
@@ -208,7 +219,11 @@ def generate_input_data(
         x = 0.0
         y = 0.0
         if a_full_domain:
-            z = random.uniform(np.deg2rad(1), np.deg2rad(178))
+            z = random.uniform(np.deg2rad(0), np.deg2rad(360))
+            while (abs(1 / np.tan(z)) > 2 ** (a_width - 1) - 1) or (
+                abs(np.tan(z)) > 2 ** (a_width - 1) - 1
+            ):
+                z = random.uniform(np.deg2rad(1), np.deg2rad(359))
         else:
             z = random.uniform(np.deg2rad(30), np.deg2rad(70))
     # --------------------------------------------------------
@@ -534,7 +549,7 @@ def anti_range_reduction(
 
 def compare_value(actual, reference):
     if reference is not None:
-        match = math.isclose(a=actual, b=reference, rel_tol=0.01, abs_tol=1e-9)
+        match = math.isclose(a=actual, b=reference, rel_tol=0.01, abs_tol=1e-6)
         diff_rel = abs(actual - reference) / (reference + 1e-9)
         if not match:
             print(

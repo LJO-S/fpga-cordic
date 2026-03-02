@@ -49,6 +49,8 @@ architecture rtl of cordic_initialization is
     constant C_PROC_GAIN_INV     : signed(G_DATA_WIDTH - 1 downto 0) := f_real_to_signed(1.0/0.60725, G_DATA_WIDTH, G_FRAC_WIDTH);
     constant C_PROC_GAIN_HYP     : signed(G_DATA_WIDTH - 1 downto 0) := f_real_to_signed(0.82816, G_DATA_WIDTH, G_FRAC_WIDTH);
     constant C_PROC_GAIN_HYP_INV : signed(G_DATA_WIDTH - 1 downto 0) := f_real_to_signed(1.0/0.82816, G_DATA_WIDTH, G_FRAC_WIDTH);
+    constant C_CONST_ONE         : signed(G_DATA_WIDTH - 1 downto 0) := f_real_to_signed(1.0, G_DATA_WIDTH, G_FRAC_WIDTH);
+    constant C_CONST_HALF        : signed(G_DATA_WIDTH - 1 downto 0) := f_real_to_signed(0.5, G_DATA_WIDTH, G_FRAC_WIDTH);
     ----------------
     -- Functions
     ----------------
@@ -77,7 +79,11 @@ architecture rtl of cordic_initialization is
                 return signed(i_y_prev);
             when OUTPUT_Z =>
                 return signed(i_z_prev);
-            when others =>
+            when CONST_ONE                    =>
+                return C_CONST_ONE;
+            when CONST_HALF                   =>
+                return C_CONST_HALF;
+            when others                       =>
                 return (G_DATA_WIDTH - 1 downto 0 => '0');
         end case;
     end function;

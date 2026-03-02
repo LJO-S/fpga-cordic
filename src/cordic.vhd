@@ -45,7 +45,7 @@ architecture rtl of cordic is
     -- Constants
     ----------------
     constant C_DATA_WIDTH_DENORM : natural := G_DATA_WIDTH;
-    constant C_DATA_WIDTH_NORM   : natural := G_DATA_WIDTH_FRAC + 2;
+    constant C_DATA_WIDTH_NORM   : natural := G_DATA_WIDTH_FRAC + 1 + 2; -- 1 sign + 2 integer bits
     -- constant C_SHIFT_WIDTH       : natural := integer(ceil(log2(real(2 + C_DATA_WIDTH_DENORM - C_DATA_WIDTH_NORM))));
     constant C_SHIFT_WIDTH   : natural := 5;
     constant C_RANGE_N_WIDTH : natural := integer(ceil(log2(ceil((2.0 ** (C_DATA_WIDTH_DENORM - 1 - G_DATA_WIDTH_FRAC)) / MATH_LOG_OF_2))));

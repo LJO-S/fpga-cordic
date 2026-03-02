@@ -199,8 +199,8 @@
                         "offset": 0.0
                     },
                     "y": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "z": {
                         "type": "CONST",
@@ -354,7 +354,7 @@
                         "offset": 1.0
                     },
                     "y": {
-                        "type": "INPUT_Y",
+                        "type": "INPUT_X",
                         "offset": -1.0
                     },
                     "z": {
@@ -377,8 +377,8 @@
                 "submode": "LINEAR",
                 "init": {
                     "x": {
-                        "type": "CONST",
-                        "offset": 0.5
+                        "type": "CONST_HALF",
+                        "offset": 0.0
                     },
                     "y": {
                         "type": "OUTPUT_Z",
@@ -421,7 +421,7 @@
                     "reduction_en": true,
                     "reduction_reconstruct": true
                 },
-                "comment": "EXP step 1/1"
+                "comment": "EXP step 1/1. Range z=[0, ln(integer_width)]"
             }
         ],
         "POW": [
@@ -434,7 +434,7 @@
                         "offset": 1.0
                     },
                     "y": {
-                        "type": "INPUT_Y",
+                        "type": "INPUT_X",
                         "offset": -1.0
                     },
                     "z": {
@@ -450,7 +450,7 @@
                     },
                     "reduction_en": true
                 },
-                "comment": "POW step 1/3"
+                "comment": "POW step 1/3. Output is Y = X ** (Z/2). Use common sense for large values"
             },
             {
                 "mode": "ROTATIONAL",
@@ -512,8 +512,8 @@
                         "offset": 0.0
                     },
                     "y": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "z": {
                         "type": "CONST",
@@ -558,6 +558,14 @@
                         "offset": 0.0
                     }
                 },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "z": true
+                    },
+                    "reduction_en": true
+                },
                 "comment": "ARCCOSH step 3/4"
             },
             {
@@ -565,8 +573,8 @@
                 "submode": "LINEAR",
                 "init": {
                     "x": {
-                        "type": "CONST",
-                        "offset": 0.5
+                        "type": "CONST_HALF",
+                        "offset": 0.0
                     },
                     "y": {
                         "type": "OUTPUT_Z",
@@ -586,8 +594,8 @@
                 "submode": "CIRCULAR",
                 "init": {
                     "x": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "y": {
                         "type": "INPUT_Y",
@@ -636,6 +644,14 @@
                         "offset": 0.0
                     }
                 },
+                "normalization": {
+                    "norm_en": true,
+                    "norm_input": {
+                        "x": true,
+                        "z": true
+                    },
+                    "reduction_en": true
+                },
                 "comment": "ARCSINH step 3/4"
             },
             {
@@ -643,8 +659,8 @@
                 "submode": "LINEAR",
                 "init": {
                     "x": {
-                        "type": "CONST",
-                        "offset": 0.5
+                        "type": "CONST_HALF",
+                        "offset": 0.0
                     },
                     "y": {
                         "type": "OUTPUT_Z",
@@ -690,8 +706,8 @@
                         "offset": 0.0
                     },
                     "y": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "z": {
                         "type": "CONST",
@@ -700,7 +716,7 @@
                 },
                 "normalization": {
                     "norm_en": true,
-                    "norm_input":{
+                    "norm_input": {
                         "x": true,
                         "y": true
                     }
@@ -740,8 +756,8 @@
                         "offset": 0.0
                     },
                     "y": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "z": {
                         "type": "CONST",
@@ -750,7 +766,7 @@
                 },
                 "normalization": {
                     "norm_en": true,
-                    "norm_input":{
+                    "norm_input": {
                         "x": true,
                         "y": true
                     }
@@ -800,7 +816,7 @@
                 },
                 "normalization": {
                     "norm_en": true,
-                    "norm_input":{
+                    "norm_input": {
                         "x": true,
                         "y": true
                     }
@@ -816,8 +832,8 @@
                         "offset": 0.0
                     },
                     "y": {
-                        "type": "CONST",
-                        "offset": 1.0
+                        "type": "CONST_ONE",
+                        "offset": 0.0
                     },
                     "z": {
                         "type": "CONST",
@@ -826,151 +842,12 @@
                 },
                 "normalization": {
                     "norm_en": true,
-                    "norm_input":{
+                    "norm_input": {
                         "x": true,
                         "y": true
                     }
                 },
                 "comment": "COT step 3/3"
-            }
-        ],
-        "SECH": [
-            {
-                "mode": "ROTATIONAL",
-                "submode": "HYPERBOLIC",
-                "init": {
-                    "x": {
-                        "type": "PROC_GAIN_HYP_INV",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    },
-                    "z": {
-                        "type": "INPUT_Z",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "SECH step 1/2"
-            },
-            {
-                "mode": "VECTORING",
-                "submode": "LINEAR",
-                "init": {
-                    "x": {
-                        "type": "OUTPUT_X",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 1.0
-                    },
-                    "z": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "SECH step 2/2"
-            }
-        ],
-        "CSCH": [
-            {
-                "mode": "ROTATIONAL",
-                "submode": "HYPERBOLIC",
-                "init": {
-                    "x": {
-                        "type": "PROC_GAIN_HYP_INV",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    },
-                    "z": {
-                        "type": "INPUT_Z",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "CSCH step 1/2"
-            },
-            {
-                "mode": "VECTORING",
-                "submode": "LINEAR",
-                "init": {
-                    "x": {
-                        "type": "OUTPUT_Y",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 1.0
-                    },
-                    "z": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "CSCH step 2/2"
-            }
-        ],
-        "COTH": [
-            {
-                "mode": "ROTATIONAL",
-                "submode": "HYPERBOLIC",
-                "init": {
-                    "x": {
-                        "type": "PROC_GAIN_HYP_INV",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    },
-                    "z": {
-                        "type": "INPUT_Z",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "COTH step 1/3"
-            },
-            {
-                "mode": "VECTORING",
-                "submode": "LINEAR",
-                "init": {
-                    "x": {
-                        "type": "OUTPUT_X",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "OUTPUT_Y",
-                        "offset": 0.0
-                    },
-                    "z": {
-                        "type": "OUTPUT_Z",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "COTH step 2/3"
-            },
-            {
-                "mode": "VECTORING",
-                "submode": "LINEAR",
-                "init": {
-                    "x": {
-                        "type": "OUTPUT_Z",
-                        "offset": 0.0
-                    },
-                    "y": {
-                        "type": "CONST",
-                        "offset": 1.0
-                    },
-                    "z": {
-                        "type": "CONST",
-                        "offset": 0.0
-                    }
-                },
-                "comment": "COTH step 3/3"
             }
         ],
         "ARCSIN": [

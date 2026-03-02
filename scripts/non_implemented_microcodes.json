@@ -1,0 +1,141 @@
+{
+    "SECH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "SECH step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST_ONE",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "SECH step 2/2"
+            }
+        ],
+        "CSCH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "CSCH step 1/2"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST_ONE",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "CSCH step 2/2"
+            }
+        ],
+        "COTH": [
+            {
+                "mode": "ROTATIONAL",
+                "submode": "HYPERBOLIC",
+                "init": {
+                    "x": {
+                        "type": "PROC_GAIN_HYP_INV",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "INPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 1/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_X",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "OUTPUT_Y",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 2/3"
+            },
+            {
+                "mode": "VECTORING",
+                "submode": "LINEAR",
+                "init": {
+                    "x": {
+                        "type": "OUTPUT_Z",
+                        "offset": 0.0
+                    },
+                    "y": {
+                        "type": "CONST_ONE",
+                        "offset": 0.0
+                    },
+                    "z": {
+                        "type": "CONST",
+                        "offset": 0.0
+                    }
+                },
+                "comment": "COTH step 3/3"
+            }
+        ]
+    }
