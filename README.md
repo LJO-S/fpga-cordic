@@ -14,59 +14,59 @@ such as:
 
 The theory is the following:
 
-            A
-       _____|_____
-      /     |     \                        
-     /      |      \                    
-    |       |       |                  
-----|-------|-------|-------->
-    |       |       |
-     \      |      /
-      \_____|_____/
-            |                          
+                A
+           _____|_____
+          /     |     \                        
+         /      |      \                    
+        |       |       |                  
+    ----|-------|-------|-------->
+        |       |       |
+         \      |      /
+          \_____|_____/
+                |                          
                                       
 CORDIC is built upon rotations on the unit circle. By rotating an initialized vector through
 a fixed set of angles until a condition is met, we can calculate different functions. The initialization and iteration rules are important, as those dictate the function obtained. In rotation mode we can calculate the sine and cosine of an angle. 
 Given an angle Theta, we can find the X and Y coordinate corresponding to it. One would initialize the vector v0 with
 
-<font color="green"> v0 = [1, 0] </font>
+    v0 = [1, 0]
 
 Usually, in the first iteration the vector is rotated with +45 degrees. Successive iterations rotate the vector in ever-decreasing steps until the condition is met, e.g. angle is found. The step size is chosen to be:
 
-<font color="green"> Z_i = arctan(2^(-i))  for i = 0,1,2,... </font>
+    Z_i = arctan(2^(-i))  for i = 0,1,2,... 
 
 due to a simplification one can do further down. Keep reading! 
 In formal words, each iteration v_(i+1) performs a rotation on the initialization vector v_i by R_i. The rotation matrix R_i is:
 
-<font color="green"> R_i = [[cos(Z_i), -sin(Z_i)], [sin(Z_i), cos(Z_i)]] </font>
+    R_i = [[cos(Z_i), -sin(Z_i)], [sin(Z_i), cos(Z_i)]]
 
 Simplifying this yields:
 
-<font color="green"> R_i = cos(Z_i) [[1, -tan(Z_i)], [tan(Z_i), 1]] </font>
+    R_i = cos(Z_i) [[1, -tan(Z_i)], [tan(Z_i), 1]]
 
 But there's more! By setting the angle such that tan(Z_i) = +-2^(-i) the equation will still yield a series that converges to every possible output value, whilst the above expression can be heavily simplified:
 
-<font color="green"> R_i = cos(arctan(2^(-i))) * [[1, -d*2^-i], [d*2^-i, 1]] </font>
+    R_i = cos(arctan(2^(-i))) * [[1, -d*2^-i], [d*2^-i, 1]]
 
 where 'd' determines the sign and therefore direction of the rotation.
 
-<font color="green"> >> d = +1 if (Z_i > 0) else -1 </font>
+    d = +1 if (Z_i > 0) else -1 
 
 The first term looks problematic. Fear not! A trigonometic allow further simplification:
 
-<font color="green"> cos(Z_i) = 1/sqrt(1 + tan(Z_i)^2) </font>
+    cos(Z_i) = 1/sqrt(1 + tan(Z_i)^2) 
 
 Using this on the term yields:
 
-<font color="green"> K_i = cos(arctan(2^-i)) = 1/sqrt(1 + 2^(-2*i)) </font>
+    K_i = cos(arctan(2^-i)) = 1/sqrt(1 + 2^(-2*i)) 
 
 This is the "processing gain" and can be taken out of the iterative process to be added later.
 
-<font color="green"> K(n) = product(K_i, start=0, end=n-1) ~= 0.607 </font>
+    K(n) = product(K_i, start=0, end=n-1) ~= 0.607 
 
 By pre-correcting with 1/K (~= 1.645), one can avoid correction altogether. To obtain the angle through the algorithm, the iterative angle is kept track of and iterated via:
 
-<font color="green"> theta_i+1 = theta_i - (d * Z_i) </font>
+    theta_i+1 = theta_i - (d * Z_i)  
 
 Note here that the whole algorithm boils down to adds/subtracts & right-shifts. Usually, the preset iterative values are stored in a LUT along with any correction values.
 
