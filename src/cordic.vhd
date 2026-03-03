@@ -6,6 +6,8 @@ use ieee.math_real.all;
 use work.cordic_pkg.all;
 use work.cordic_microcode_pkg.all;
 -- 
+-- NOTE: if venturing higher than 31 bits we need to change every to_signed() in the code! 
+-- 
 entity cordic is
     generic (
         -- Input data total width

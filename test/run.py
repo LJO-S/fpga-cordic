@@ -667,7 +667,7 @@ testbench = lib.entity("cordic_tb")
 test = testbench.test("auto")
 
 tb_cordic_checker_obj = cordic_checker()
-
+# NOTE: if venturing higher than 31 bits we need to change every to_signed() in the code!
 G_DATA_WIDTH = 31
 G_DATA_WIDTH_FRAC = 25
 G_NBR_OF_ITERATIONS = 40
